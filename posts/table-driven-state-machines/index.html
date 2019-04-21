@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article# " lang="en">
+<head>
+<meta charset="utf-8">
+<base href="https://fabioutzig.com/posts/table-driven-state-machines/">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Table-driven state machines | Fabio Utzig</title>
+<link href="../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+<meta content="#5670d4" name="theme-color">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="../../rss.xml">
+<link rel="canonical" href="https://fabioutzig.com/posts/table-driven-state-machines/">
+<!--[if lt IE 9]><script src="../../assets/js/html5.js"></script><![endif]--><link rel="stylesheet" href="../../css/font.css">
+<link rel="stylesheet" href="../../css/main.css">
+<meta name="author" content="Fabio Utzig">
+<link rel="prev" href="../back-to-guitar-playing/" title="Back to guitar playing" type="text/html">
+<link rel="next" href="../solving-lattice-path/" title="Solving Lattice Path" type="text/html">
+<meta property="og:site_name" content="Fabio Utzig">
+<meta property="og:title" content="Table-driven state machines">
+<meta property="og:url" content="https://fabioutzig.com/posts/table-driven-state-machines/">
+<meta property="og:description" content="Some weeks ago I was writing a protocol stack for a serial RFID reader for
+a commercial project I'm working on. Apart from one command, all the others
+are standard serial communication where you send ">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2013-06-21T00:00:00-03:00">
+<meta property="article:tag" content="c">
+<meta property="article:tag" content="programming">
+</head>
+<body>
+<a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+
+<!-- Menubar -->
+
+<nav class="navbar navbar-inverse navbar-static-top"><div class="container">
+<!-- This keeps the margins nice -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-navbar" aria-controls="bs-navbar" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://fabioutzig.com/">
+
+                <span id="blog-title">Fabio Utzig</span>
+            </a>
+        </div>
+<!-- /.navbar-header -->
+        <div class="collapse navbar-collapse" id="bs-navbar" aria-expanded="false">
+            <ul class="nav navbar-nav">
+<li>
+<a href="../../archive.html">Archive</a>
+                </li>
+<li>
+<a href="../../categories/">Tags</a>
+                </li>
+<li>
+<a href="../../rss.xml">RSS feed</a>
+
+                
+            </li>
+</ul>
+<ul class="nav navbar-nav navbar-right">
+<li>
+    <a href="index.rst" id="sourcelink">Source</a>
+    </li>
+
+                
+            </ul>
+</div>
+<!-- /.navbar-collapse -->
+    </div>
+<!-- /.container -->
+</nav><!-- End of Menubar --><div class="container" id="content" role="main">
+    <div class="body-content">
+        <!--Body content-->
+        <div class="row">
+            
+            
+<article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">Table-driven state machines</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn">
+                    Fabio Utzig
+            </span></p>
+            <p class="dateline"><a href="." rel="bookmark"><time class="published dt-published" datetime="2013-06-21T00:00:00-03:00" itemprop="datePublished" title="2013-06-21 00:00">2013-06-21 00:00</time></a></p>
+                <p class="commentline">
+        
+    <a href="#disqus_thread" data-disqus-identifier="cache/posts/table-driven-state-machines.html">Comments</a>
+
+
+            
+        </p>
+<p class="sourceline"><a href="index.rst" id="sourcelink">Source</a></p>
+
+        </div>
+        
+
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <div>
+<p>Some weeks ago I was writing a protocol stack for a serial RFID reader for
+a commercial project I'm working on. Apart from one command, all the others
+are standard serial communication where you send a fixed data structure and
+receive a fixed data structure. But there's this command that does inventory,
+which means, get all the RFID <em>tags</em> in the area. You request the data and it
+starts sending many different packets for each <em>tag</em>.</p>
+<p>The response format and size can vary but it always starts with a fixed
+header which can be "RITM", "BITM", "EITM" or "IITM". So I basically wrote
+a state machine do wait for one of these possible headers to start reading
+the remaining data (size depends on the header type).</p>
+<p>To make it easier I draw the following flowchart:</p>
+<img alt="/images/rfid_header_sm.jpg" src="../../images/rfid_header_sm.jpg"><p>I guess not many people will be impressed by my great drawing skills! Btw,
+if anyone can suggest me a good flow charting software for free or low-cost
+I'd be thankful.</p>
+<p>The only missing edges on this diagram are the ones that connect
+all states back to state <em>S0</em> when an invalid character is received.</p>
+<div class="section" id="rudimentary-state-machine-code">
+<h2>Rudimentary state machine code</h2>
+<p>The code I initially wrote to solve the problem is shown below:</p>
+<pre class="code cpp"><a name="rest_code_eeb3c08f09be426e93067a4359088bf0-1"></a><span class="kt">uint8_t</span> <span class="n">rxbuf</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-2"></a><span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-3"></a><span class="kt">uint8_t</span> <span class="n">b</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-4"></a><span class="kt">uint8_t</span> <span class="n">idx</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-5"></a>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-6"></a><span class="cp">#define S0 0</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-7"></a><span class="cp">#define S1 1</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-8"></a><span class="cp">#define S2 2</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-9"></a><span class="cp">#define S3 3</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-10"></a><span class="cp">#define S4 4</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-11"></a>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-12"></a><span class="k">while</span> <span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-13"></a>    <span class="kt">uint8_t</span> <span class="n">state</span> <span class="o">=</span> <span class="n">S0</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-14"></a>    <span class="n">idx</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-15"></a>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-16"></a>    <span class="k">do</span> <span class="p">{</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-17"></a>        <span class="n">err</span> <span class="o">=</span> <span class="n">serial_read</span><span class="p">(</span><span class="o">&amp;</span><span class="n">rxbuf</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="mi">1</span><span class="p">);</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-18"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">err</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">)</span> <span class="k">continue</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-19"></a>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-20"></a>        <span class="k">switch</span> <span class="p">(</span><span class="n">state</span><span class="p">)</span> <span class="p">{</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-21"></a>        <span class="k">case</span> <span class="nl">S0</span><span class="p">:</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-22"></a>            <span class="n">b</span> <span class="o">=</span> <span class="n">rxbuf</span><span class="p">[</span><span class="n">idx</span><span class="p">];</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-23"></a>            <span class="k">if</span> <span class="p">(</span><span class="n">isvalid</span><span class="p">(</span><span class="n">b</span><span class="p">))</span> <span class="p">{</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-24"></a>                <span class="n">state</span> <span class="o">=</span> <span class="n">S1</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-25"></a>                <span class="n">idx</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-26"></a>            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-27"></a>                <span class="n">idx</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-28"></a>            <span class="p">}</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-29"></a>            <span class="k">break</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-30"></a>        <span class="k">case</span> <span class="nl">S1</span><span class="p">:</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-31"></a>            <span class="n">b</span> <span class="o">=</span> <span class="n">rxbuf</span><span class="p">[</span><span class="n">idx</span><span class="p">];</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-32"></a>            <span class="k">if</span> <span class="p">(</span><span class="n">b</span> <span class="o">==</span> <span class="sc">'I'</span><span class="p">)</span> <span class="p">{</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-33"></a>                <span class="n">state</span> <span class="o">=</span> <span class="n">S2</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-34"></a>                <span class="n">idx</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-35"></a>            <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">isvalid</span><span class="p">(</span><span class="n">b</span><span class="p">))</span> <span class="p">{</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-36"></a>                <span class="n">state</span> <span class="o">=</span> <span class="n">S1</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-37"></a>                <span class="n">rxbuf</span><span class="p">[</span><span class="n">idx</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">rxbuf</span><span class="p">[</span><span class="n">idx</span><span class="p">];</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-38"></a>                <span class="n">idx</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-39"></a>            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-40"></a>                <span class="n">state</span> <span class="o">=</span> <span class="n">S0</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-41"></a>                <span class="n">idx</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-42"></a>            <span class="p">}</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-43"></a>            <span class="k">break</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-44"></a>        <span class="k">case</span> <span class="nl">S2</span><span class="p">:</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-45"></a>            <span class="n">b</span> <span class="o">=</span> <span class="n">rxbuf</span><span class="p">[</span><span class="n">idx</span><span class="p">];</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-46"></a>            <span class="k">if</span> <span class="p">(</span><span class="n">b</span> <span class="o">==</span> <span class="sc">'T'</span><span class="p">)</span> <span class="p">{</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-47"></a>                <span class="n">state</span> <span class="o">=</span> <span class="n">S3</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-48"></a>                <span class="n">idx</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-49"></a>            <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">isvalid</span><span class="p">(</span><span class="n">b</span><span class="p">))</span> <span class="p">{</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-50"></a>                <span class="n">state</span> <span class="o">=</span> <span class="n">S1</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-51"></a>                <span class="n">rxbuf</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">rxbuf</span><span class="p">[</span><span class="n">idx</span><span class="p">];</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-52"></a>                <span class="n">idx</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-53"></a>            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-54"></a>                <span class="n">state</span> <span class="o">=</span> <span class="n">S0</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-55"></a>                <span class="n">idx</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-56"></a>            <span class="p">}</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-57"></a>            <span class="k">break</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-58"></a>        <span class="k">case</span> <span class="nl">S3</span><span class="p">:</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-59"></a>            <span class="n">b</span> <span class="o">=</span> <span class="n">rxbuf</span><span class="p">[</span><span class="n">idx</span><span class="p">];</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-60"></a>            <span class="k">if</span> <span class="p">(</span><span class="n">b</span> <span class="o">==</span> <span class="sc">'M'</span><span class="p">)</span> <span class="p">{</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-61"></a>                <span class="n">state</span> <span class="o">=</span> <span class="n">S4</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-62"></a>            <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">isvalid</span><span class="p">(</span><span class="n">b</span><span class="p">))</span> <span class="p">{</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-63"></a>                <span class="n">state</span> <span class="o">=</span> <span class="n">S1</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-64"></a>                <span class="n">rxbuf</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">rxbuf</span><span class="p">[</span><span class="n">idx</span><span class="p">];</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-65"></a>                <span class="n">idx</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-66"></a>            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-67"></a>                <span class="n">state</span> <span class="o">=</span> <span class="n">S0</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-68"></a>                <span class="n">idx</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-69"></a>            <span class="p">}</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-70"></a>            <span class="k">break</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-71"></a>        <span class="p">}</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-72"></a>    <span class="p">}</span> <span class="k">while</span> <span class="p">(</span><span class="n">state</span> <span class="o">!=</span> <span class="n">S4</span><span class="p">);</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-73"></a><span class="p">}</span>
+</pre>
+<p>The function <em>isvalid</em> tests if the character received is a valid
+starting character for the header strings know.</p>
+<pre class="code cpp"><a name="rest_code_ea8297b0b12a4e21ba904a7ddbbd694e-1"></a><span class="k">static</span> <span class="kt">uint8_t</span> <span class="nf">isvalid</span><span class="p">(</span><span class="kt">uint8_t</span> <span class="n">b</span><span class="p">)</span>
+<a name="rest_code_ea8297b0b12a4e21ba904a7ddbbd694e-2"></a><span class="p">{</span>
+<a name="rest_code_ea8297b0b12a4e21ba904a7ddbbd694e-3"></a>    <span class="k">return</span> <span class="p">(</span><span class="n">b</span> <span class="o">==</span> <span class="sc">'R'</span> <span class="o">||</span> <span class="n">b</span> <span class="o">==</span> <span class="sc">'B'</span> <span class="o">||</span> <span class="n">b</span> <span class="o">==</span> <span class="sc">'E'</span> <span class="o">||</span> <span class="n">b</span> <span class="o">==</span> <span class="sc">'I'</span><span class="p">);</span>
+<a name="rest_code_ea8297b0b12a4e21ba904a7ddbbd694e-4"></a><span class="p">}</span>
+</pre>
+<p>It worked as expect but it should be clear that it's messy and has a spaghetti
+structure which could quickly grow into unmaintainable code. The problem
+is having a <em>case</em> for each state and inside it a nested if/elseif test for
+the received character.</p>
+</div>
+<div class="section" id="towards-a-better-state-machine-structure">
+<h2>Towards a better state machine structure</h2>
+<p>While reading <a href="http://www.amazon.com/dp/1556220782/?tag=utzig-20" target="_blank">Programming Game AI by Example</a> (great book!)
+I stumbled across some designs for state machines and in particular one
+table-driven which doesn't require object orientation and polymorphism. Although
+the book only gives a rough example, it is clear enough. I previously saw a very
+similar approach used in lexers where a given input regular expression generates
+a table-driven state machine.</p>
+<p>To get started the first thing I did was to define a <em>struct</em> to accomodate the
+necessary data. Here's how it looks:</p>
+<pre class="code cpp"><a name="rest_code_1adef2a098024339aea1e7a562ec4495-1"></a><span class="k">typedef</span> <span class="k">struct</span>
+<a name="rest_code_1adef2a098024339aea1e7a562ec4495-2"></a><span class="p">{</span>
+<a name="rest_code_1adef2a098024339aea1e7a562ec4495-3"></a>    <span class="kt">int8_t</span> <span class="n">cur_state</span><span class="p">;</span>
+<a name="rest_code_1adef2a098024339aea1e7a562ec4495-4"></a>    <span class="kt">uint8_t</span> <span class="p">(</span><span class="o">*</span><span class="n">valid</span><span class="p">)(</span><span class="kt">char</span><span class="p">);</span>
+<a name="rest_code_1adef2a098024339aea1e7a562ec4495-5"></a>    <span class="kt">int8_t</span> <span class="n">next_state</span><span class="p">;</span>
+<a name="rest_code_1adef2a098024339aea1e7a562ec4495-6"></a>    <span class="kt">uint8_t</span> <span class="n">index</span><span class="p">;</span>
+<a name="rest_code_1adef2a098024339aea1e7a562ec4495-7"></a><span class="p">}</span> <span class="n">transition_t</span><span class="p">;</span>
+</pre>
+<p>Basically to decide the new state what is used is a current state and the last
+character received. But using the last character directly has many drawbacks
+so I decided to use a function (<em>valid</em>) to decide the next state. The <em>index</em>
+variable is custom data I need to get the position where the character will
+be inserted in the input buffer. This is not really part of the state machine.</p>
+<p>Here's what the declaration of the final state machine looks like:</p>
+<pre class="code cpp"><a name="rest_code_b2a299d66a104f999b466a55d6d40200-1"></a><span class="cp">#define S0 0</span>
+<a name="rest_code_b2a299d66a104f999b466a55d6d40200-2"></a><span class="cp">#define S1 1</span>
+<a name="rest_code_b2a299d66a104f999b466a55d6d40200-3"></a><span class="cp">#define S2 2</span>
+<a name="rest_code_b2a299d66a104f999b466a55d6d40200-4"></a><span class="cp">#define S3 3</span>
+<a name="rest_code_b2a299d66a104f999b466a55d6d40200-5"></a><span class="cp">#define S4 4</span>
+<a name="rest_code_b2a299d66a104f999b466a55d6d40200-6"></a>
+<a name="rest_code_b2a299d66a104f999b466a55d6d40200-7"></a><span class="k">static</span> <span class="n">transition_t</span> <span class="n">trs</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span>
+<a name="rest_code_b2a299d66a104f999b466a55d6d40200-8"></a>    <span class="cm">/* STATE 0 */</span>
+<a name="rest_code_b2a299d66a104f999b466a55d6d40200-9"></a>    <span class="p">{</span>    <span class="n">S0</span><span class="p">,</span>      <span class="n">initial_char</span><span class="p">,</span>   <span class="n">S1</span><span class="p">,</span>  <span class="mi">0</span>   <span class="p">},</span>
+<a name="rest_code_b2a299d66a104f999b466a55d6d40200-10"></a>    <span class="p">{</span>    <span class="n">S0</span><span class="p">,</span>          <span class="n">_true</span><span class="p">,</span>      <span class="n">S0</span><span class="p">,</span>  <span class="mi">0</span>   <span class="p">},</span>
+<a name="rest_code_b2a299d66a104f999b466a55d6d40200-11"></a>    <span class="cm">/* STATE 1 */</span>
+<a name="rest_code_b2a299d66a104f999b466a55d6d40200-12"></a>    <span class="p">{</span>    <span class="n">S1</span><span class="p">,</span>         <span class="n">I_char</span><span class="p">,</span>      <span class="n">S2</span><span class="p">,</span>  <span class="mi">1</span>   <span class="p">},</span>
+<a name="rest_code_b2a299d66a104f999b466a55d6d40200-13"></a>    <span class="p">{</span>    <span class="n">S1</span><span class="p">,</span>      <span class="n">initial_char</span><span class="p">,</span>   <span class="n">S1</span><span class="p">,</span>  <span class="mi">0</span>   <span class="p">},</span>
+<a name="rest_code_b2a299d66a104f999b466a55d6d40200-14"></a>    <span class="p">{</span>    <span class="n">S1</span><span class="p">,</span>          <span class="n">_true</span><span class="p">,</span>      <span class="n">S0</span><span class="p">,</span>  <span class="mi">0</span>   <span class="p">},</span>
+<a name="rest_code_b2a299d66a104f999b466a55d6d40200-15"></a>    <span class="cm">/* STATE 2 */</span>
+<a name="rest_code_b2a299d66a104f999b466a55d6d40200-16"></a>    <span class="p">{</span>    <span class="n">S2</span><span class="p">,</span>         <span class="n">T_char</span><span class="p">,</span>      <span class="n">S3</span><span class="p">,</span>  <span class="mi">2</span>   <span class="p">},</span>
+<a name="rest_code_b2a299d66a104f999b466a55d6d40200-17"></a>    <span class="p">{</span>    <span class="n">S2</span><span class="p">,</span>      <span class="n">initial_char</span><span class="p">,</span>   <span class="n">S1</span><span class="p">,</span>  <span class="mi">0</span>   <span class="p">},</span>
+<a name="rest_code_b2a299d66a104f999b466a55d6d40200-18"></a>    <span class="p">{</span>    <span class="n">S2</span><span class="p">,</span>         <span class="n">_true</span><span class="p">,</span>       <span class="n">S0</span><span class="p">,</span>  <span class="mi">0</span>   <span class="p">},</span>
+<a name="rest_code_b2a299d66a104f999b466a55d6d40200-19"></a>    <span class="cm">/* STATE 3 */</span>
+<a name="rest_code_b2a299d66a104f999b466a55d6d40200-20"></a>    <span class="p">{</span>    <span class="n">S3</span><span class="p">,</span>         <span class="n">M_char</span><span class="p">,</span>      <span class="n">S4</span><span class="p">,</span>  <span class="mi">3</span>   <span class="p">},</span>
+<a name="rest_code_b2a299d66a104f999b466a55d6d40200-21"></a>    <span class="p">{</span>    <span class="n">S3</span><span class="p">,</span>      <span class="n">initial_char</span><span class="p">,</span>   <span class="n">S1</span><span class="p">,</span>  <span class="mi">0</span>   <span class="p">},</span>
+<a name="rest_code_b2a299d66a104f999b466a55d6d40200-22"></a>    <span class="p">{</span>    <span class="n">S3</span><span class="p">,</span>         <span class="n">_true</span><span class="p">,</span>       <span class="n">S0</span><span class="p">,</span>  <span class="mi">0</span>   <span class="p">},</span>
+<a name="rest_code_b2a299d66a104f999b466a55d6d40200-23"></a><span class="p">};</span>
+<a name="rest_code_b2a299d66a104f999b466a55d6d40200-24"></a>
+<a name="rest_code_b2a299d66a104f999b466a55d6d40200-25"></a><span class="kt">uint8_t</span> <span class="n">trs_size</span> <span class="o">=</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">trs</span><span class="p">)</span> <span class="o">/</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">trs</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+</pre>
+<p>The element in the second column is a function which will evaluate if this is
+the valid row. For example, when in state <em>S1</em> if <em>I_char</em> returns
+<em>true</em> (by <em>C's</em> definition) then it goes to state <em>S2</em>. Else if
+<em>initial_char</em> returns <em>true</em> it stays in state <em>S1</em>. The function <em>_true</em>
+always returns a <em>true</em> value.</p>
+<p>The order of the row declarations is important because they are tested
+from the starting row towards the ending row.</p>
+<p>The variable <em>trs_size</em> is the number of elements in the state machine
+description used in the main algorithm to iterate over all elements.</p>
+<p>These are the definitions of the fuctions used in the declaration of the
+state machine:</p>
+<pre class="code cpp"><a name="rest_code_15f7caa827cb41e5843291d074912867-1"></a><span class="k">static</span> <span class="kt">uint8_t</span> <span class="nf">initial_char</span><span class="p">(</span><span class="kt">char</span> <span class="n">c</span><span class="p">)</span>
+<a name="rest_code_15f7caa827cb41e5843291d074912867-2"></a><span class="p">{</span>
+<a name="rest_code_15f7caa827cb41e5843291d074912867-3"></a>    <span class="k">return</span> <span class="p">(</span><span class="n">c</span><span class="o">==</span><span class="sc">'R'</span> <span class="o">||</span> <span class="n">c</span><span class="o">==</span><span class="sc">'B'</span> <span class="o">||</span> <span class="n">c</span><span class="o">==</span><span class="sc">'E'</span> <span class="o">||</span> <span class="n">c</span><span class="o">==</span><span class="sc">'I'</span><span class="p">);</span>
+<a name="rest_code_15f7caa827cb41e5843291d074912867-4"></a><span class="p">}</span>
+<a name="rest_code_15f7caa827cb41e5843291d074912867-5"></a><span class="k">static</span> <span class="kt">uint8_t</span> <span class="nf">I_char</span><span class="p">(</span><span class="kt">char</span> <span class="n">ch</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="p">(</span><span class="n">ch</span> <span class="o">==</span> <span class="sc">'I'</span><span class="p">);</span> <span class="p">}</span>
+<a name="rest_code_15f7caa827cb41e5843291d074912867-6"></a><span class="k">static</span> <span class="kt">uint8_t</span> <span class="nf">T_char</span><span class="p">(</span><span class="kt">char</span> <span class="n">ch</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="p">(</span><span class="n">ch</span> <span class="o">==</span> <span class="sc">'T'</span><span class="p">);</span> <span class="p">}</span>
+<a name="rest_code_15f7caa827cb41e5843291d074912867-7"></a><span class="k">static</span> <span class="kt">uint8_t</span> <span class="nf">M_char</span><span class="p">(</span><span class="kt">char</span> <span class="n">ch</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="p">(</span><span class="n">ch</span> <span class="o">==</span> <span class="sc">'M'</span><span class="p">);</span> <span class="p">}</span>
+<a name="rest_code_15f7caa827cb41e5843291d074912867-8"></a><span class="k">static</span> <span class="kt">uint8_t</span> <span class="nf">_true</span> <span class="p">(</span><span class="kt">char</span> <span class="n">ch</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="mi">1</span><span class="p">;</span> <span class="p">}</span>
+</pre>
+<p>The function <em>initial_char</em> returns <em>true</em> if any of the characters
+valid to initiate a header is found. There is also one function for each of
+the extra possible characters. <em>_true</em> always returns <em>1</em>.</p>
+<p>And here is the final state machine code!</p>
+<pre class="code cpp"><a name="rest_code_ac10119522494f16bc8e8bccac30c638-1"></a><span class="kt">uint8_t</span> <span class="n">state</span> <span class="o">=</span> <span class="n">S0</span><span class="p">;</span>
+<a name="rest_code_ac10119522494f16bc8e8bccac30c638-2"></a><span class="k">do</span> <span class="p">{</span>
+<a name="rest_code_ac10119522494f16bc8e8bccac30c638-3"></a>    <span class="n">err</span> <span class="o">=</span> <span class="n">serial_read</span><span class="p">(</span><span class="o">&amp;</span><span class="n">b</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+<a name="rest_code_ac10119522494f16bc8e8bccac30c638-4"></a>    <span class="k">if</span> <span class="p">(</span><span class="n">err</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">)</span> <span class="k">continue</span><span class="p">;</span>
+<a name="rest_code_ac10119522494f16bc8e8bccac30c638-5"></a>
+<a name="rest_code_ac10119522494f16bc8e8bccac30c638-6"></a>    <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">trs_size</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+<a name="rest_code_ac10119522494f16bc8e8bccac30c638-7"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">state</span> <span class="o">==</span> <span class="n">trs</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">cur_state</span><span class="p">)</span> <span class="p">{</span>
+<a name="rest_code_ac10119522494f16bc8e8bccac30c638-8"></a>            <span class="k">if</span> <span class="p">(</span><span class="n">trs</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">valid</span><span class="p">((</span><span class="kt">char</span><span class="p">)</span> <span class="n">b</span><span class="p">))</span> <span class="p">{</span>
+<a name="rest_code_ac10119522494f16bc8e8bccac30c638-9"></a>                <span class="n">state</span> <span class="o">=</span> <span class="n">trs</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">next_state</span><span class="p">;</span>
+<a name="rest_code_ac10119522494f16bc8e8bccac30c638-10"></a>                <span class="n">rxbuf</span><span class="p">[</span><span class="n">trs</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">b</span><span class="p">;</span>
+<a name="rest_code_ac10119522494f16bc8e8bccac30c638-11"></a>                <span class="k">break</span><span class="p">;</span>
+<a name="rest_code_ac10119522494f16bc8e8bccac30c638-12"></a>            <span class="p">}</span>
+<a name="rest_code_ac10119522494f16bc8e8bccac30c638-13"></a>        <span class="p">}</span>
+<a name="rest_code_ac10119522494f16bc8e8bccac30c638-14"></a>    <span class="p">}</span>
+<a name="rest_code_ac10119522494f16bc8e8bccac30c638-15"></a><span class="p">}</span> <span class="k">while</span> <span class="p">(</span><span class="n">state</span> <span class="o">!=</span> <span class="n">S4</span><span class="p">);</span>
+</pre>
+<p>In the end the code is actually bigger and probably less efficient. But
+it should be a lot easier to maintain. If I copy/paste it on another
+project I will only need to modify the state machine array declaration
+(and probably also the custom data).</p>
+</div>
+<div class="section" id="things-that-could-be-made-better">
+<h2>Things that could be made better</h2>
+<p>The is (at least) one thing which could be made better in the newer code.
+Look at these function definitions below:</p>
+<pre class="code cpp"><a name="rest_code_c1e127cf270d449fbd1380ad33a96b9a-1"></a><span class="k">static</span> <span class="kt">uint8_t</span> <span class="nf">I_char</span><span class="p">(</span><span class="kt">char</span> <span class="n">ch</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="p">(</span><span class="n">ch</span> <span class="o">==</span> <span class="sc">'I'</span><span class="p">);</span> <span class="p">}</span>
+<a name="rest_code_c1e127cf270d449fbd1380ad33a96b9a-2"></a><span class="k">static</span> <span class="kt">uint8_t</span> <span class="nf">T_char</span><span class="p">(</span><span class="kt">char</span> <span class="n">ch</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="p">(</span><span class="n">ch</span> <span class="o">==</span> <span class="sc">'T'</span><span class="p">);</span> <span class="p">}</span>
+<a name="rest_code_c1e127cf270d449fbd1380ad33a96b9a-3"></a><span class="k">static</span> <span class="kt">uint8_t</span> <span class="nf">M_char</span><span class="p">(</span><span class="kt">char</span> <span class="n">ch</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="p">(</span><span class="n">ch</span> <span class="o">==</span> <span class="sc">'M'</span><span class="p">);</span> <span class="p">}</span>
+</pre>
+<p>As it must be quite obvious, they all look pretty much the same. Only the
+character tested changes. There should be a way of fixing this with
+preprocessor macros. I have in mind something like this:</p>
+<pre class="code cpp"><a name="rest_code_92942ce6a3754489844125c691c9b8d2-1"></a><span class="cp">#define CHAR_FUN(c) static uint8_t c##_char(char ch) { return (ch == '##c##'); }</span>
+<a name="rest_code_92942ce6a3754489844125c691c9b8d2-2"></a>
+<a name="rest_code_92942ce6a3754489844125c691c9b8d2-3"></a><span class="n">CHAR_FUN</span> <span class="p">(</span><span class="n">I</span><span class="p">)</span>
+<a name="rest_code_92942ce6a3754489844125c691c9b8d2-4"></a><span class="n">CHAR_FUN</span> <span class="p">(</span><span class="n">T</span><span class="p">)</span>
+<a name="rest_code_92942ce6a3754489844125c691c9b8d2-5"></a><span class="n">CHAR_FUN</span> <span class="p">(</span><span class="n">M</span><span class="p">)</span>
+</pre>
+<p>The problem in this code is that <em>preprocessor's</em> concatenation doesn't work
+inside single quotes. So it generates the correct function name but the test
+will look like <em>ch == '##c##'</em> instead of the correct character.</p>
+<p>I'm not sure yet of how to do it but I'll keep trying!</p>
+</div>
+<div class="section" id="update-22-jun-2013">
+<h2>UPDATE (22 Jun 2013)</h2>
+<p>I just found a way of solving the problem above using <em>stringification</em> as
+provided by the preprocessor. Not great but it does the job.</p>
+<pre class="code cpp"><a name="rest_code_2172a71360a842e3b4dd4fd0e0e0120a-1"></a><span class="cp">#define CHAR_FUN(c) static uint8_t c##_char(char ch){char *s=#c;return(ch==s[0]);}</span>
+<a name="rest_code_2172a71360a842e3b4dd4fd0e0e0120a-2"></a><span class="n">CHAR_FUN</span> <span class="p">(</span><span class="n">I</span><span class="p">)</span>
+<a name="rest_code_2172a71360a842e3b4dd4fd0e0e0120a-3"></a><span class="n">CHAR_FUN</span> <span class="p">(</span><span class="n">T</span><span class="p">)</span>
+<a name="rest_code_2172a71360a842e3b4dd4fd0e0e0120a-4"></a><span class="n">CHAR_FUN</span> <span class="p">(</span><span class="n">M</span><span class="p">)</span>
+</pre>
+</div>
+</div>
+    </div>
+    <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">
+<li><a class="tag p-category" href="../../categories/c/" rel="tag">c</a></li>
+            <li><a class="tag p-category" href="../../categories/programming/" rel="tag">programming</a></li>
+        </ul>
+<ul class="pager hidden-print">
+<li class="previous">
+                <a href="../back-to-guitar-playing/" rel="prev" title="Back to guitar playing">Previous post</a>
+            </li>
+            <li class="next">
+                <a href="../solving-lattice-path/" rel="next" title="Solving Lattice Path">Next post</a>
+            </li>
+        </ul></nav></aside><section class="comments hidden-print"><h2>Comments</h2>
+        
+        
+        <div id="disqus_thread"></div>
+        <script>
+        var disqus_shortname ="utzig",
+            disqus_url="https://fabioutzig.com/posts/table-driven-state-machines/",
+        disqus_title="Table-driven state machines",
+        disqus_identifier="cache/posts/table-driven-state-machines.html",
+        disqus_config = function () {
+            this.language = "en";
+        };
+        (function() {
+            var dsq = document.createElement('script'); dsq.async = true;
+            dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script><noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a>
+</noscript>
+    <a href="https://disqus.com" class="dsq-brlink" rel="nofollow">Comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+        </section></article><script>var disqus_shortname="utzig";(function(){var a=document.createElement("script");a.async=true;a.src="https://"+disqus_shortname+".disqus.com/count.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(a)}());</script>
+</div>
+        <!--End of body content-->
+
+        <footer id="footer">
+            Contents © 2016         <a href="mailto:utzig@utzig.org">Fabio Utzig</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+            
+        </footer>
+</div>
+</div>
+
+
+            <script src="../../assets/js/all-nocdn.js"></script><script>$('a.image-reference:not(.islink) img:not(.islink)').parent().colorbox({rel:"gal",maxWidth:"100%",maxHeight:"100%",scalePhotos:true});</script><!-- fancy dates --><script>
+    moment.locale("en");
+    fancydates(0, "YYYY-MM-DD HH:mm");
+    </script><!-- end fancy dates -->
+</body>
+</html>

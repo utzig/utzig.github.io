@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article# " lang="en">
+<head>
+<meta charset="utf-8">
+<base href="https://fabioutzig.com/posts/fixing-the-serial-port-of-my-nexys2/">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fixing the serial port of my Nexys2 | Fabio Utzig</title>
+<link href="../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+<meta content="#5670d4" name="theme-color">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="../../rss.xml">
+<link rel="canonical" href="https://fabioutzig.com/posts/fixing-the-serial-port-of-my-nexys2/">
+<!--[if lt IE 9]><script src="../../assets/js/html5.js"></script><![endif]--><link rel="stylesheet" href="../../css/font.css">
+<link rel="stylesheet" href="../../css/main.css">
+<meta name="author" content="Fabio Utzig">
+<link rel="prev" href="../cheap-chinese-ssds/" title="Cheap Chinese SSDs" type="text/html">
+<link rel="next" href="../back-to-guitar-playing/" title="Back to guitar playing" type="text/html">
+<meta property="og:site_name" content="Fabio Utzig">
+<meta property="og:title" content="Fixing the serial port of my Nexys2">
+<meta property="og:url" content="https://fabioutzig.com/posts/fixing-the-serial-port-of-my-nexys2/">
+<meta property="og:description" content="I'm writing this post because today I fixed the serial port of my Nexys2
+board. This will mainly highlight how we can get trapped in some way of
+thinking when we're pretty sure about something and not">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2013-05-18T00:00:00-03:00">
+<meta property="article:tag" content="fpga">
+<meta property="article:tag" content="verilog">
+</head>
+<body>
+<a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+
+<!-- Menubar -->
+
+<nav class="navbar navbar-inverse navbar-static-top"><div class="container">
+<!-- This keeps the margins nice -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-navbar" aria-controls="bs-navbar" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://fabioutzig.com/">
+
+                <span id="blog-title">Fabio Utzig</span>
+            </a>
+        </div>
+<!-- /.navbar-header -->
+        <div class="collapse navbar-collapse" id="bs-navbar" aria-expanded="false">
+            <ul class="nav navbar-nav">
+<li>
+<a href="../../archive.html">Archive</a>
+                </li>
+<li>
+<a href="../../categories/">Tags</a>
+                </li>
+<li>
+<a href="../../rss.xml">RSS feed</a>
+
+                
+            </li>
+</ul>
+<ul class="nav navbar-nav navbar-right">
+<li>
+    <a href="index.rst" id="sourcelink">Source</a>
+    </li>
+
+                
+            </ul>
+</div>
+<!-- /.navbar-collapse -->
+    </div>
+<!-- /.container -->
+</nav><!-- End of Menubar --><div class="container" id="content" role="main">
+    <div class="body-content">
+        <!--Body content-->
+        <div class="row">
+            
+            
+<article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">Fixing the serial port of my Nexys2</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn">
+                    Fabio Utzig
+            </span></p>
+            <p class="dateline"><a href="." rel="bookmark"><time class="published dt-published" datetime="2013-05-18T00:00:00-03:00" itemprop="datePublished" title="2013-05-18 00:00">2013-05-18 00:00</time></a></p>
+                <p class="commentline">
+        
+    <a href="#disqus_thread" data-disqus-identifier="cache/posts/fixing-the-serial-port-of-my-nexys2.html">Comments</a>
+
+
+            
+        </p>
+<p class="sourceline"><a href="index.rst" id="sourcelink">Source</a></p>
+
+        </div>
+        
+
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <div>
+<p>I'm writing this post because today I <em>fixed</em> the serial port of my Nexys2
+board. This will mainly highlight how we can get trapped in some way of
+thinking when we're pretty sure about something and not contemplate a whole
+spectrum of options surrounding it. It will be somewhat shameful I guess,
+but let's see if you can find the solution more easily than I did!</p>
+<p>A month ago or so I was working on learning Verilog and was writing some code.
+I got to a point where I wanted to test a softcore and I needed to upload code
+through the serial port. While getting there, I made a <em>port</em> of the lattice
+mico32 softcore to my board. Actually the hard work was already done and I only
+had to make some very small adaptations. I used the code from this repo:</p>
+<p><a class="reference external" href="https://github.com/optixx/lm32">https://github.com/optixx/lm32</a></p>
+<p>The problem was that it booted, sent a prompt throught the serial port but I
+could not input commands. If you look at the code at <em>firmware/boot0-serial/main.c</em>
+you'll see that what it does is this:</p>
+<pre class="code cpp"><a name="rest_code_ffbba2ec7be54995a409bcea3fbc5ea5-1"></a><span class="n">uart_putstr</span><span class="p">(</span><span class="s">"**soc-lm32/bootloader** &gt; </span><span class="se">\r\n</span><span class="s">"</span><span class="p">);</span>
+<a name="rest_code_ffbba2ec7be54995a409bcea3fbc5ea5-2"></a><span class="n">c</span> <span class="o">=</span> <span class="n">uart_getchar</span><span class="p">();</span>
+</pre>
+<p>I'm omitting the irrelevant code. So I got the prompt but no data that I sent from
+the computer ever got in to the Nexys2.
+Since the lm32 is a quite complex softcore I thought that maybe it had
+some problems and ended up testing other UART cores. Actually I ended up writing
+my own which is at this repo (in the directory <em>uart</em>):</p>
+<p><a class="reference external" href="https://github.com/utzig/nexys2-verilog-samples">https://github.com/utzig/nexys2-verilog-samples</a> (btw, this is not good code!)</p>
+<p>The results were the same. It worked in the transmit direction only.</p>
+<p>The schematics for the Nexys2 UART converter is this:</p>
+<img alt="/images/nexys2_uart.png" src="../../images/nexys2_uart.png"><p>I put an oscilloscope on the RX signal and tried to find out what was
+happening. So here's how a RS232 UART works. The TX/RX lines are usually
+in high level. When you send data,
+the first thing it does is to send the <em>START</em> bit. A <em>START</em> bit is
+characterized by a transition from high to low level. The data bits go next
+and at last the <em>STOP</em> bit (or bits). What was happening here was that the
+RX line would go
+to low level and stay that way. It would never go back to high level. No data
+was going through. To get it back to working state I had to disconnect/reconnect.</p>
+<p>I started suspecting my the issue was with my USB &lt;-&gt; RS232 adapter. I got
+another board (an ARM CM3 powered devboard) and wrote some code for doing
+serial communications. This ended up working and I got data in and out. So
+it was clear the problem was not with my serial adapter. Btw, here are the
+schematics of the board I used to do the test (Olimex STM32-P103):</p>
+<img alt="/images/stm32-p103-uart.png" src="../../images/stm32-p103-uart.png"><p>The conclusion then was that the problem was either with the pin used for RX on
+my FPGA or with the onboard TTL &lt;-&gt; RS232 converter. So I ended up buying some extra
+converters to test it. And these things are not easy to get here in Brazil.
+But I found them at <a class="reference external" href="http://www.multcomercial.com.br">Multcomercial</a>. They arrived yesterday and this morning I
+removed the old ST3232 and put a new MAX3232 chip. You can see the final result
+below:</p>
+<img alt="/images/max3232.jpg" src="../../images/max3232.jpg"><p>As you can see I ended up destroying one onboard wire and had to fix with normal
+wire. When I turned it on, data came out and when I sent data nothing came in.
+Shit!!!</p>
+<p>So, the problem must be with the FPGA pin, right? Actually no, it isn't.</p>
+<p>Let's look harder at schematics! There are some difference between the two boards.
+The STM32 has the main lines (RX/TX/GND) connected in the standard way but
+it has also the CTS/RTS lines connected to the converter and has a resistor
+between DTR and DSR. The Nexys2 has the RX/TX/GND lines connected the same
+way but RTS is connected to CTS (no connection to the converter) and
+DSR/DTR/DCD are all connected together. Interesting, right?.</p>
+<p>I got a spare serial cable, soldered the 3 pins which matter (RX/TX/GND),
+tried again and voilá... data out and data in.</p>
+<p>Sometimes we get stuck with knowing for sure that we know what's happening
+but turns out we don't (at least it applies to me!).</p>
+</div>
+    </div>
+    <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">
+<li><a class="tag p-category" href="../../categories/fpga/" rel="tag">fpga</a></li>
+            <li><a class="tag p-category" href="../../categories/verilog/" rel="tag">verilog</a></li>
+        </ul>
+<ul class="pager hidden-print">
+<li class="previous">
+                <a href="../cheap-chinese-ssds/" rel="prev" title="Cheap Chinese SSDs">Previous post</a>
+            </li>
+            <li class="next">
+                <a href="../back-to-guitar-playing/" rel="next" title="Back to guitar playing">Next post</a>
+            </li>
+        </ul></nav></aside><section class="comments hidden-print"><h2>Comments</h2>
+        
+        
+        <div id="disqus_thread"></div>
+        <script>
+        var disqus_shortname ="utzig",
+            disqus_url="https://fabioutzig.com/posts/fixing-the-serial-port-of-my-nexys2/",
+        disqus_title="Fixing the serial port of my Nexys2",
+        disqus_identifier="cache/posts/fixing-the-serial-port-of-my-nexys2.html",
+        disqus_config = function () {
+            this.language = "en";
+        };
+        (function() {
+            var dsq = document.createElement('script'); dsq.async = true;
+            dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script><noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a>
+</noscript>
+    <a href="https://disqus.com" class="dsq-brlink" rel="nofollow">Comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+        </section></article><script>var disqus_shortname="utzig";(function(){var a=document.createElement("script");a.async=true;a.src="https://"+disqus_shortname+".disqus.com/count.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(a)}());</script>
+</div>
+        <!--End of body content-->
+
+        <footer id="footer">
+            Contents © 2016         <a href="mailto:utzig@utzig.org">Fabio Utzig</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+            
+        </footer>
+</div>
+</div>
+
+
+            <script src="../../assets/js/all-nocdn.js"></script><script>$('a.image-reference:not(.islink) img:not(.islink)').parent().colorbox({rel:"gal",maxWidth:"100%",maxHeight:"100%",scalePhotos:true});</script><!-- fancy dates --><script>
+    moment.locale("en");
+    fancydates(0, "YYYY-MM-DD HH:mm");
+    </script><!-- end fancy dates -->
+</body>
+</html>

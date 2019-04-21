@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article# " lang="en">
+<head>
+<meta charset="utf-8">
+<base href="https://fabioutzig.com/posts/solving-lattice-path/">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Solving Lattice Path | Fabio Utzig</title>
+<link href="../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+<meta content="#5670d4" name="theme-color">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="../../rss.xml">
+<link rel="canonical" href="https://fabioutzig.com/posts/solving-lattice-path/">
+<!--[if lt IE 9]><script src="../../assets/js/html5.js"></script><![endif]--><link rel="stylesheet" href="../../css/font.css">
+<link rel="stylesheet" href="../../css/main.css">
+<meta name="author" content="Fabio Utzig">
+<link rel="prev" href="../table-driven-state-machines/" title="Table-driven state machines" type="text/html">
+<meta property="og:site_name" content="Fabio Utzig">
+<meta property="og:title" content="Solving Lattice Path">
+<meta property="og:url" content="https://fabioutzig.com/posts/solving-lattice-path/">
+<meta property="og:description" content="SPOILER: if you want to or are working on the exercises from
+Project Euler, you should stop reading now!
+According to Wikipedia, Project Euler is a website dedicated to a
+series of computational probl">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2014-06-11T00:00:00-03:00">
+<meta property="article:tag" content="math">
+<meta property="article:tag" content="project-euler">
+<meta property="article:tag" content="puzzle">
+</head>
+<body>
+<a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+
+<!-- Menubar -->
+
+<nav class="navbar navbar-inverse navbar-static-top"><div class="container">
+<!-- This keeps the margins nice -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-navbar" aria-controls="bs-navbar" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://fabioutzig.com/">
+
+                <span id="blog-title">Fabio Utzig</span>
+            </a>
+        </div>
+<!-- /.navbar-header -->
+        <div class="collapse navbar-collapse" id="bs-navbar" aria-expanded="false">
+            <ul class="nav navbar-nav">
+<li>
+<a href="../../archive.html">Archive</a>
+                </li>
+<li>
+<a href="../../categories/">Tags</a>
+                </li>
+<li>
+<a href="../../rss.xml">RSS feed</a>
+
+                
+            </li>
+</ul>
+<ul class="nav navbar-nav navbar-right">
+<li>
+    <a href="index.rst" id="sourcelink">Source</a>
+    </li>
+
+                
+            </ul>
+</div>
+<!-- /.navbar-collapse -->
+    </div>
+<!-- /.container -->
+</nav><!-- End of Menubar --><div class="container" id="content" role="main">
+    <div class="body-content">
+        <!--Body content-->
+        <div class="row">
+            
+            
+<article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">Solving Lattice Path</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn">
+                    Fabio Utzig
+            </span></p>
+            <p class="dateline"><a href="." rel="bookmark"><time class="published dt-published" datetime="2014-06-11T00:00:00-03:00" itemprop="datePublished" title="2014-06-11 00:00">2014-06-11 00:00</time></a></p>
+                <p class="commentline">
+        
+    <a href="#disqus_thread" data-disqus-identifier="cache/posts/solving-lattice-path.html">Comments</a>
+
+
+            
+        </p>
+<p class="sourceline"><a href="index.rst" id="sourcelink">Source</a></p>
+
+        </div>
+        
+
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <div>
+<p><strong>SPOILER</strong>: if you want to or are working on the exercises from
+<a class="reference external" href="http://projecteuler.net/">Project Euler</a>, you should stop reading now!</p>
+<p>According to Wikipedia, <a class="reference external" href="http://projecteuler.net/">Project Euler</a> is a website dedicated to a
+series of computational problems intended to be solved with computer programs
+<a class="footnote-reference" href="#id2" id="id1">[1]</a>.</p>
+<table class="docutils footnote" frame="void" id="id2" rules="none">
+<colgroup>
+<col class="label">
+<col>
+</colgroup>
+<tbody valign="top"><tr>
+<td class="label"><a class="fn-backref" href="#id1">[1]</a></td>
+<td><a class="reference external" href="http://en.wikipedia.org/wiki/Project_Euler">http://en.wikipedia.org/wiki/Project_Euler</a></td>
+</tr></tbody>
+</table>
+<p>The problems are mostly math related and one main characteristic of most problems
+is that they are usually hard to solve through brute force because they usually
+have polynomial/exponential complexity and questions always ask for very large input
+or number of inputs.</p>
+<p>Problem 15, Lattice Paths, is one that I found really interesting because it's
+a geometric problem and with an intuitive solution. Let me copy here the text from
+the problem.</p>
+<blockquote>
+Starting in the top left corner of a 2×2 grid, and only being able to move to the
+right and down, there are exactly 6 routes to the bottom right corner.</blockquote>
+<img alt="/images/lattice_path.png" src="../../images/lattice_path.png"><!--  --><blockquote>
+How many such routes are there through a 20×20 grid?</blockquote>
+<p>So my first reaction was: <em>I'll just do a brute force algorithm and see what happens!</em></p>
+<p>I wrote an algorithm that uses recursion to find all possible paths. This is how it
+ended up:</p>
+<table class="codetable"><tr>
+<td class="linenos"><div class="linenodiv"><pre><a href="#rest_code_8c0f4c15eb474a79bee726de105420e8-1"> 1</a>
+<a href="#rest_code_8c0f4c15eb474a79bee726de105420e8-2"> 2</a>
+<a href="#rest_code_8c0f4c15eb474a79bee726de105420e8-3"> 3</a>
+<a href="#rest_code_8c0f4c15eb474a79bee726de105420e8-4"> 4</a>
+<a href="#rest_code_8c0f4c15eb474a79bee726de105420e8-5"> 5</a>
+<a href="#rest_code_8c0f4c15eb474a79bee726de105420e8-6"> 6</a>
+<a href="#rest_code_8c0f4c15eb474a79bee726de105420e8-7"> 7</a>
+<a href="#rest_code_8c0f4c15eb474a79bee726de105420e8-8"> 8</a>
+<a href="#rest_code_8c0f4c15eb474a79bee726de105420e8-9"> 9</a>
+<a href="#rest_code_8c0f4c15eb474a79bee726de105420e8-10">10</a>
+<a href="#rest_code_8c0f4c15eb474a79bee726de105420e8-11">11</a>
+<a href="#rest_code_8c0f4c15eb474a79bee726de105420e8-12">12</a>
+<a href="#rest_code_8c0f4c15eb474a79bee726de105420e8-13">13</a>
+<a href="#rest_code_8c0f4c15eb474a79bee726de105420e8-14">14</a>
+<a href="#rest_code_8c0f4c15eb474a79bee726de105420e8-15">15</a>
+<a href="#rest_code_8c0f4c15eb474a79bee726de105420e8-16">16</a>
+<a href="#rest_code_8c0f4c15eb474a79bee726de105420e8-17">17</a>
+<a href="#rest_code_8c0f4c15eb474a79bee726de105420e8-18">18</a>
+<a href="#rest_code_8c0f4c15eb474a79bee726de105420e8-19">19</a>
+<a href="#rest_code_8c0f4c15eb474a79bee726de105420e8-20">20</a>
+<a href="#rest_code_8c0f4c15eb474a79bee726de105420e8-21">21</a></pre></div></td>
+<td class="code"><pre class="code ruby"><a name="rest_code_8c0f4c15eb474a79bee726de105420e8-1"></a> <span class="k">class</span> <span class="nc">LatticePath</span>
+<a name="rest_code_8c0f4c15eb474a79bee726de105420e8-2"></a>   <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+<a name="rest_code_8c0f4c15eb474a79bee726de105420e8-3"></a>     <span class="vi">@size</span> <span class="o">=</span> <span class="n">size</span>
+<a name="rest_code_8c0f4c15eb474a79bee726de105420e8-4"></a>   <span class="k">end</span>
+<a name="rest_code_8c0f4c15eb474a79bee726de105420e8-5"></a>
+<a name="rest_code_8c0f4c15eb474a79bee726de105420e8-6"></a>   <span class="k">def</span> <span class="nf">total</span>
+<a name="rest_code_8c0f4c15eb474a79bee726de105420e8-7"></a>     <span class="n">moves</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<a name="rest_code_8c0f4c15eb474a79bee726de105420e8-8"></a>   <span class="k">end</span>
+<a name="rest_code_8c0f4c15eb474a79bee726de105420e8-9"></a>
+<a name="rest_code_8c0f4c15eb474a79bee726de105420e8-10"></a>   <span class="kp">private</span>
+<a name="rest_code_8c0f4c15eb474a79bee726de105420e8-11"></a>
+<a name="rest_code_8c0f4c15eb474a79bee726de105420e8-12"></a>   <span class="k">def</span> <span class="nf">moves</span><span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="n">cols</span><span class="p">)</span>
+<a name="rest_code_8c0f4c15eb474a79bee726de105420e8-13"></a>     <span class="k">return</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">rows</span> <span class="o">==</span> <span class="vi">@size</span> <span class="o">&amp;&amp;</span> <span class="n">cols</span> <span class="o">==</span> <span class="vi">@size</span>
+<a name="rest_code_8c0f4c15eb474a79bee726de105420e8-14"></a>     <span class="k">return</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">rows</span> <span class="o">&gt;</span> <span class="vi">@size</span> <span class="o">||</span> <span class="n">cols</span> <span class="o">&gt;</span> <span class="vi">@size</span>
+<a name="rest_code_8c0f4c15eb474a79bee726de105420e8-15"></a>     <span class="k">return</span> <span class="n">moves</span><span class="p">(</span><span class="n">rows</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">cols</span><span class="p">)</span> <span class="o">+</span> <span class="n">moves</span><span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="n">cols</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+<a name="rest_code_8c0f4c15eb474a79bee726de105420e8-16"></a>   <span class="k">end</span>
+<a name="rest_code_8c0f4c15eb474a79bee726de105420e8-17"></a> <span class="k">end</span>
+<a name="rest_code_8c0f4c15eb474a79bee726de105420e8-18"></a>
+<a name="rest_code_8c0f4c15eb474a79bee726de105420e8-19"></a> <span class="n">sides</span> <span class="o">=</span> <span class="p">(</span><span class="no">ARGV</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="o">&amp;&amp;</span> <span class="no">ARGV</span><span class="o">[</span><span class="mi">0</span><span class="o">].</span><span class="n">to_i</span><span class="p">)</span> <span class="o">||</span> <span class="mi">20</span> <span class="c1"># default value if none specified</span>
+<a name="rest_code_8c0f4c15eb474a79bee726de105420e8-20"></a> <span class="n">lattice_path</span> <span class="o">=</span> <span class="no">LatticePath</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">sides</span><span class="p">)</span>
+<a name="rest_code_8c0f4c15eb474a79bee726de105420e8-21"></a> <span class="nb">puts</span> <span class="n">lattice_path</span><span class="o">.</span><span class="n">total</span>
+</pre></td>
+</tr></table>
+<p>Well, how bad could it be? Turn outs very bad.</p>
+<p>Running this for less than 13 sides was OK. Running this for 14 sides was
+enough to take quite some time. Running for more than 14, it just takes too
+long. I suppose it would take years for 20 sides. It obviously explodes in
+complexity very quickly.</p>
+<p>Looking up for ways to solve this or similar problems, I ended up watching this
+video from <a class="reference external" href="https://www.khanacademy.org/">Khan Academy</a> where Salman basically gives it away!</p>
+<div class="section" id="path-counting-brain-teaser">
+<h2>Path Counting Brain Teaser</h2>
+<iframe width="560" height="420" src="https://www.youtube.com/embed/9QduzzW10uA?color=white&amp;theme=light">
+</iframe><p>I will not try to re-explain what's in the video so you should watch it first.
+I'll follow from where the video ends, and will develop an algorithm that only
+requires an array of size equal to one _side_ of the matrix to solve this problem.</p>
+<p>Basically after filling in values for each cell, what we get is an matrix like
+this:</p>
+<img alt="/images/full_grid.png" src="../../images/full_grid.png"><p>And looking more carefully, we can see that this matrix is symmetric. The coloring
+I used on the pictures should make that clear. We are interested in the value on
+the main diagonal so we can remove everything below it.</p>
+<img alt="/images/half_grid.png" src="../../images/half_grid.png"><p>The next step was to recognize that each cell depends only on the cell to the left
+and above it. The element in the diagonal is always the element above it multiplied
+by 2 and the other elements in that row are the sum of the element in the cell to
+the left with the element in the cell above them. The picture below should make
+it clearer.</p>
+<img alt="/images/grid_formula.png" src="../../images/grid_formula.png"><p>Now even more interesting is observing that every element only depends on the
+elements exactly above them and once a new row is calculated from the row above
+it, the former is not necessary anymore. So in the end the whole problem can be
+solved by a simple array of size equal to the number of cell on one side of the
+square matrix!</p>
+<p>And here's my optimized solution to the problem:</p>
+<table class="codetable"><tr>
+<td class="linenos"><div class="linenodiv"><pre><a href="#rest_code_ba4127145559491f8697a6f3f292eb0d-1"> 1</a>
+<a href="#rest_code_ba4127145559491f8697a6f3f292eb0d-2"> 2</a>
+<a href="#rest_code_ba4127145559491f8697a6f3f292eb0d-3"> 3</a>
+<a href="#rest_code_ba4127145559491f8697a6f3f292eb0d-4"> 4</a>
+<a href="#rest_code_ba4127145559491f8697a6f3f292eb0d-5"> 5</a>
+<a href="#rest_code_ba4127145559491f8697a6f3f292eb0d-6"> 6</a>
+<a href="#rest_code_ba4127145559491f8697a6f3f292eb0d-7"> 7</a>
+<a href="#rest_code_ba4127145559491f8697a6f3f292eb0d-8"> 8</a>
+<a href="#rest_code_ba4127145559491f8697a6f3f292eb0d-9"> 9</a>
+<a href="#rest_code_ba4127145559491f8697a6f3f292eb0d-10">10</a>
+<a href="#rest_code_ba4127145559491f8697a6f3f292eb0d-11">11</a>
+<a href="#rest_code_ba4127145559491f8697a6f3f292eb0d-12">12</a>
+<a href="#rest_code_ba4127145559491f8697a6f3f292eb0d-13">13</a>
+<a href="#rest_code_ba4127145559491f8697a6f3f292eb0d-14">14</a>
+<a href="#rest_code_ba4127145559491f8697a6f3f292eb0d-15">15</a>
+<a href="#rest_code_ba4127145559491f8697a6f3f292eb0d-16">16</a>
+<a href="#rest_code_ba4127145559491f8697a6f3f292eb0d-17">17</a></pre></div></td>
+<td class="code"><pre class="code ruby"><a name="rest_code_ba4127145559491f8697a6f3f292eb0d-1"></a> <span class="c1">#!/usr/bin/env ruby</span>
+<a name="rest_code_ba4127145559491f8697a6f3f292eb0d-2"></a>
+<a name="rest_code_ba4127145559491f8697a6f3f292eb0d-3"></a> <span class="k">def</span> <span class="nf">lattice_path</span><span class="p">(</span><span class="n">sides</span><span class="p">)</span>
+<a name="rest_code_ba4127145559491f8697a6f3f292eb0d-4"></a>   <span class="n">a</span> <span class="o">=</span> <span class="nb">Array</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">sides</span><span class="p">)</span> <span class="p">{</span> <span class="mi">1</span> <span class="p">}</span>
+<a name="rest_code_ba4127145559491f8697a6f3f292eb0d-5"></a>
+<a name="rest_code_ba4127145559491f8697a6f3f292eb0d-6"></a>   <span class="mi">1</span><span class="o">.</span><span class="n">upto</span><span class="p">(</span><span class="n">sides</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">col</span><span class="o">|</span>
+<a name="rest_code_ba4127145559491f8697a6f3f292eb0d-7"></a>     <span class="n">a</span><span class="o">[</span><span class="n">col</span><span class="o">]</span> <span class="o">*=</span> <span class="mi">2</span>
+<a name="rest_code_ba4127145559491f8697a6f3f292eb0d-8"></a>     <span class="p">(</span><span class="n">col</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">upto</span><span class="p">(</span><span class="n">sides</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">n</span><span class="o">|</span>
+<a name="rest_code_ba4127145559491f8697a6f3f292eb0d-9"></a>       <span class="n">a</span><span class="o">[</span><span class="n">n</span><span class="o">]</span> <span class="o">=</span> <span class="n">a</span><span class="o">[</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="o">]</span> <span class="o">+</span> <span class="n">a</span><span class="o">[</span><span class="n">n</span><span class="o">]</span>
+<a name="rest_code_ba4127145559491f8697a6f3f292eb0d-10"></a>     <span class="k">end</span>
+<a name="rest_code_ba4127145559491f8697a6f3f292eb0d-11"></a>   <span class="k">end</span>
+<a name="rest_code_ba4127145559491f8697a6f3f292eb0d-12"></a>
+<a name="rest_code_ba4127145559491f8697a6f3f292eb0d-13"></a>   <span class="n">a</span><span class="o">[</span><span class="n">sides</span> <span class="o">-</span> <span class="mi">1</span><span class="o">]</span>
+<a name="rest_code_ba4127145559491f8697a6f3f292eb0d-14"></a> <span class="k">end</span>
+<a name="rest_code_ba4127145559491f8697a6f3f292eb0d-15"></a>
+<a name="rest_code_ba4127145559491f8697a6f3f292eb0d-16"></a> <span class="n">sides</span> <span class="o">=</span> <span class="p">(</span><span class="no">ARGV</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="o">&amp;&amp;</span> <span class="no">ARGV</span><span class="o">[</span><span class="mi">0</span><span class="o">].</span><span class="n">to_i</span><span class="p">)</span> <span class="o">||</span> <span class="mi">20</span> <span class="c1"># default value if none specified</span>
+<a name="rest_code_ba4127145559491f8697a6f3f292eb0d-17"></a> <span class="nb">puts</span> <span class="n">lattice_path</span><span class="p">(</span><span class="n">sides</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+</pre></td>
+</tr></table>
+<p>Have fun!</p>
+</div>
+</div>
+    </div>
+    <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">
+<li><a class="tag p-category" href="../../categories/math/" rel="tag">math</a></li>
+            <li><a class="tag p-category" href="../../categories/project-euler/" rel="tag">project-euler</a></li>
+            <li><a class="tag p-category" href="../../categories/puzzle/" rel="tag">puzzle</a></li>
+        </ul>
+<ul class="pager hidden-print">
+<li class="previous">
+                <a href="../table-driven-state-machines/" rel="prev" title="Table-driven state machines">Previous post</a>
+            </li>
+        </ul></nav></aside><section class="comments hidden-print"><h2>Comments</h2>
+        
+        
+        <div id="disqus_thread"></div>
+        <script>
+        var disqus_shortname ="utzig",
+            disqus_url="https://fabioutzig.com/posts/solving-lattice-path/",
+        disqus_title="Solving Lattice Path",
+        disqus_identifier="cache/posts/solving-lattice-path.html",
+        disqus_config = function () {
+            this.language = "en";
+        };
+        (function() {
+            var dsq = document.createElement('script'); dsq.async = true;
+            dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script><noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a>
+</noscript>
+    <a href="https://disqus.com" class="dsq-brlink" rel="nofollow">Comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+        </section></article><script>var disqus_shortname="utzig";(function(){var a=document.createElement("script");a.async=true;a.src="https://"+disqus_shortname+".disqus.com/count.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(a)}());</script>
+</div>
+        <!--End of body content-->
+
+        <footer id="footer">
+            Contents © 2016         <a href="mailto:utzig@utzig.org">Fabio Utzig</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+            
+        </footer>
+</div>
+</div>
+
+
+            <script src="../../assets/js/all-nocdn.js"></script><script>$('a.image-reference:not(.islink) img:not(.islink)').parent().colorbox({rel:"gal",maxWidth:"100%",maxHeight:"100%",scalePhotos:true});</script><!-- fancy dates --><script>
+    moment.locale("en");
+    fancydates(0, "YYYY-MM-DD HH:mm");
+    </script><!-- end fancy dates -->
+</body>
+</html>

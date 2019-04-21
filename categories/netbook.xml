@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/"><channel><title>Fabio Utzig (netbook)</title><link>https://fabioutzig.com/</link><description></description><atom:link href="https://fabioutzig.com/categories/netbook.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Tue, 19 Jul 2016 00:29:27 GMT</lastBuildDate><generator>https://getnikola.com/</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Asus 1025c</title><link>https://fabioutzig.com/posts/asus-1025c-review/</link><dc:creator>Fabio Utzig</dc:creator><description>&lt;div&gt;&lt;p&gt;Last November I did not resist the temptation and bought a Netbook.
+For some time I had been wishing to buy a &lt;strong&gt;very portable&lt;/strong&gt; computer
+that could be carried anywhere without much effort. I'd been keep an eye on
+the Asus 1025c for a few months due to its relatively well powered
+processor (for an Atom, obviously) and low-price.&lt;/p&gt;
+&lt;p&gt;So, on Black Friday, the day of making new debts, which we proudly copied
+from the Yankees, although ours is a kinda watered down version, I saw it
+for 75% of the normal price and voilá, here it is.&lt;/p&gt;
+&lt;p&gt;The specs of this &lt;strong&gt;beast&lt;/strong&gt; are:&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;Atom N2600 1.6GHz&lt;/li&gt;
+&lt;li&gt;2GB RAM&lt;/li&gt;
+&lt;li&gt;320GB HDD&lt;/li&gt;
+&lt;li&gt;10" screen&lt;/li&gt;
+&lt;li&gt;Atheros AR9485 WiFi&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;It came with Windows 7 Starter so guess what's the first thing to do? Not
+hard, huh.&lt;/p&gt;
+&lt;p&gt;I ended up installing Linux (Arch), FreeBSD and NetBSD. Despite the quite
+new hardware every OS works fairly well. Linux had a lot of problems
+with the WiFi chip initially but in the latest kernel versions it works
+really well.&lt;/p&gt;
+&lt;p&gt;The low-point has been the video support. For the N2x00 Atom family, Intel
+decided to license the PowerVR SGX 545 core from Imagination Technologies.
+So basically there's no 2D and 3D acceleration. Intel even released a closed
+source driver which require some old versions of many packages which there's
+no way to use with a rolling release like Arch Linux.&lt;/p&gt;
+&lt;p&gt;In general I'm impressed with the performance of the machine. It's not close
+to a Core i5/7 but it's better than I expected. As long as the quad-core is
+exploited with things like &lt;em&gt;make -j4&lt;/em&gt; it is good to go. The two main problems
+with system limitations were: running Eclipse for anything; and synthesizing
+VHDL/Verilog designs. The Xilinx tools take a really long time to synthesize
+anything. But they are slow even on an i5 anyway!&lt;/p&gt;&lt;/div&gt;</description><category>netbook</category><guid>https://fabioutzig.com/posts/asus-1025c-review/</guid><pubDate>Thu, 21 Feb 2013 03:00:00 GMT</pubDate></item></channel></rss>

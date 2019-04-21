@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/"><channel><title>Fabio Utzig (vm)</title><link>https://fabioutzig.com/</link><description></description><atom:link href="https://fabioutzig.com/categories/vm.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Tue, 19 Jul 2016 00:29:26 GMT</lastBuildDate><generator>https://getnikola.com/</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Running Bootcamp Linux on Parallels</title><link>https://fabioutzig.com/posts/running-bootcamp-linux-on-parallels/</link><dc:creator>Fabio Utzig</dc:creator><description>&lt;div&gt;&lt;p&gt;Some weeks after I bought my MacBook Pro about two years ago I decided
+that I needed to run both Mac OS X, Windows and Linux on it so at the time
+I upgraded the original HDD to a Seagate 7200rpm 750GB disk.&lt;/p&gt;
+&lt;p&gt;I installed both Windows 7 and Linux as Bootcamp partitions. Bootcamp
+for Mac basically does BIOS emulation and enables you to use old style MBR
+partitions for booting operating systems (and some other things too). Mac OS X
+uses EFI and GPT.&lt;/p&gt;
+&lt;p&gt;I use &lt;a class="reference external" href="http://refit.sourceforge.net/"&gt;rEFIt&lt;/a&gt; to triple boot my system. It displays an operating system
+chooser at startup with fancy graphics and also maintains consistency between
+GPT and MBR partitions.&lt;/p&gt;
+&lt;p&gt;But the problem is that it sucks having to reboot everytime you have to run
+a program on another operating system!&lt;/p&gt;
+&lt;p&gt;For Windows, I've been running it on &lt;a class="reference external" href="http://www.parallels.com/"&gt;Parallels Desktop&lt;/a&gt; as well as native. Parallels
+does some fancy integration enabling Windows programs to run on Mac OS X screen
+and works as Mac programs, including clipboard integration and such.&lt;/p&gt;
+&lt;p&gt;So my objective was to run Linux on Parallels as well is runs Windows. For
+Windows you just have to create a new VM using a Bootcamp partition and
+Parallels takes care of all configurations and everything is done automatically.
+For Linux you have to do pretty much everything manually. Almost everything
+is standard VM configuration and straightforward for those used to running VM
+software. The hardest part is making the hard disk emulation run from a native
+partition.&lt;/p&gt;
+&lt;p&gt;So I started adding the machine's disk, enumeration and selected the partition
+using the GUI. But when I started the machine it hanged with error: &lt;em&gt;missing
+operating system&lt;/em&gt;.&lt;/p&gt;
+&lt;p&gt;Looking into the internals of a Parallels VM, there is one directory for each
+created VM. For Linux it was located in:&lt;/p&gt;
+&lt;blockquote&gt;
+/Users/utzig/Documents/Parallels/Arch Linux.pvm/ST9750420AS (disk0).hdd/&lt;/blockquote&gt;
+&lt;p&gt;The contents were basically these (with some extra backups, etc):&lt;/p&gt;
+&lt;blockquote&gt;
+DiskDescriptor.xml
+PhysicalGpt.hds
+PhysicalMbr.hds&lt;/blockquote&gt;
+&lt;p&gt;&lt;em&gt;DiskDescriptor&lt;/em&gt;'s contents seemed right. I tried comparing the _hds_ files
+to the Windows VM's counterparts and they were equal. And here's the catch.
+Those who remember the old days of _DOS_ will probably remember that there
+was only one MBR partition that could boot a system. The partition set as
+bootable. So this was the main problem, I had created the Linux VM having my
+Windows partition as bootable!&lt;/p&gt;
+&lt;p&gt;So I removed again the hard disk from the Linux VM in Parallels and then
+changed the bootable partition on the command line. To do that on Mac OS X,
+open the terminal and run:&lt;/p&gt;
+&lt;pre class="code sh"&gt;&lt;a name="rest_code_16ec40a4d763448e97c708a7c9f7d60a-1"&gt;&lt;/a&gt;$ sudo fdisk -e /dev/rdisk0
+&lt;a name="rest_code_16ec40a4d763448e97c708a7c9f7d60a-2"&gt;&lt;/a&gt;
+&lt;a name="rest_code_16ec40a4d763448e97c708a7c9f7d60a-3"&gt;&lt;/a&gt;fdisk: 1&amp;gt; p
+&lt;a name="rest_code_16ec40a4d763448e97c708a7c9f7d60a-4"&gt;&lt;/a&gt;Disk: /dev/rdisk0   geometry: 91201/255/63 &lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;1465149168&lt;/span&gt; sectors&lt;span class="o"&gt;]&lt;/span&gt;
+&lt;a name="rest_code_16ec40a4d763448e97c708a7c9f7d60a-5"&gt;&lt;/a&gt;Offset: &lt;span class="m"&gt;0&lt;/span&gt;   Signature: 0xAA55
+&lt;a name="rest_code_16ec40a4d763448e97c708a7c9f7d60a-6"&gt;&lt;/a&gt;         Starting       Ending
+&lt;a name="rest_code_16ec40a4d763448e97c708a7c9f7d60a-7"&gt;&lt;/a&gt; &lt;span class="c1"&gt;#: id  cyl  hd sec -  cyl  hd sec [     start -       size]&lt;/span&gt;
+&lt;a name="rest_code_16ec40a4d763448e97c708a7c9f7d60a-8"&gt;&lt;/a&gt;------------------------------------------------------------------------
+&lt;a name="rest_code_16ec40a4d763448e97c708a7c9f7d60a-9"&gt;&lt;/a&gt; 1: EE &lt;span class="m"&gt;1023&lt;/span&gt; &lt;span class="m"&gt;254&lt;/span&gt;  &lt;span class="m"&gt;63&lt;/span&gt; - &lt;span class="m"&gt;1023&lt;/span&gt; &lt;span class="m"&gt;254&lt;/span&gt;  &lt;span class="m"&gt;63&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt;         &lt;span class="m"&gt;1&lt;/span&gt; -     409639&lt;span class="o"&gt;]&lt;/span&gt; &amp;lt;Unknown ID&amp;gt;
+&lt;a name="rest_code_16ec40a4d763448e97c708a7c9f7d60a-10"&gt;&lt;/a&gt; 2: AF &lt;span class="m"&gt;1023&lt;/span&gt; &lt;span class="m"&gt;254&lt;/span&gt;  &lt;span class="m"&gt;63&lt;/span&gt; - &lt;span class="m"&gt;1023&lt;/span&gt; &lt;span class="m"&gt;254&lt;/span&gt;  &lt;span class="m"&gt;63&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt;    &lt;span class="m"&gt;409640&lt;/span&gt; -  997771856&lt;span class="o"&gt;]&lt;/span&gt; HFS+
+&lt;a name="rest_code_16ec40a4d763448e97c708a7c9f7d60a-11"&gt;&lt;/a&gt; 3: &lt;span class="m"&gt;07&lt;/span&gt; &lt;span class="m"&gt;1023&lt;/span&gt; &lt;span class="m"&gt;254&lt;/span&gt;  &lt;span class="m"&gt;63&lt;/span&gt; - &lt;span class="m"&gt;1023&lt;/span&gt; &lt;span class="m"&gt;254&lt;/span&gt;  &lt;span class="m"&gt;63&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt; &lt;span class="m"&gt;998445056&lt;/span&gt; -  230230016&lt;span class="o"&gt;]&lt;/span&gt; HPFS/QNX/AUX
+&lt;a name="rest_code_16ec40a4d763448e97c708a7c9f7d60a-12"&gt;&lt;/a&gt;*4: &lt;span class="m"&gt;83&lt;/span&gt; &lt;span class="m"&gt;1023&lt;/span&gt; &lt;span class="m"&gt;254&lt;/span&gt;  &lt;span class="m"&gt;63&lt;/span&gt; - &lt;span class="m"&gt;1023&lt;/span&gt; &lt;span class="m"&gt;254&lt;/span&gt;  &lt;span class="m"&gt;63&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt;&lt;span class="m"&gt;1228675072&lt;/span&gt; -  236211912&lt;span class="o"&gt;]&lt;/span&gt; Linux files*
+&lt;a name="rest_code_16ec40a4d763448e97c708a7c9f7d60a-13"&gt;&lt;/a&gt;fdisk: 1&amp;gt;
+&lt;/pre&gt;&lt;p&gt;The necessary commands to know here are: &lt;strong&gt;p&lt;/strong&gt; to print the partition table, &lt;strong&gt;f&lt;/strong&gt;
+to set the bootable partition and &lt;strong&gt;quit&lt;/strong&gt; to quit saving. So by running &lt;strong&gt;f 4&lt;/strong&gt; I set
+the Linux partition to bootable which is shown by the &lt;strong&gt;star&lt;/strong&gt; symbols enclosing
+the line.&lt;/p&gt;
+&lt;p&gt;Then I re-added the hard disk to the Linux VM which this time booted to GRUB.
+Linux hanged because it couldn't find the root partition. After some fiddling
+I found that I had to add the line:&lt;/p&gt;
+&lt;blockquote&gt;
+MODULES="ahci libahci sd_mod"&lt;/blockquote&gt;
+&lt;p&gt;to &lt;em&gt;/etc/mkinitcpio.conf&lt;/em&gt; and re-create the initramfs image. That does make some
+sense but I don't know exaclty why it would work without it when booting native.&lt;/p&gt;
+&lt;p&gt;After being able to get to the Linux console I spent some time cleaning up to
+run on a VM.&lt;/p&gt;
+&lt;p&gt;But the funny part really comes when configuring Linux's graphic programs to
+run on Mac OS X kinda like Parallels does for Windows with Coherence. For Linux
+it relies on X11 and since Mac OS X already has &lt;strong&gt;X11.app&lt;/strong&gt; or you can also run
+&lt;a class="reference external" href="http://xquartz.macosforge.org/landing/"&gt;XQuartz&lt;/a&gt; (which I do), I could enable Linux apps to present on Mac OS X. For
+that I used SSH X11 forwarding. By editing &lt;em&gt;/etc/ssh/sshd_config&lt;/em&gt; on Linux and
+changing the following configurations:&lt;/p&gt;
+&lt;blockquote&gt;
+X11Forwarding yes
+X11DisplayOffset 10
+X11UseLocalhost yes&lt;/blockquote&gt;
+&lt;p&gt;After restarting &lt;em&gt;sshd&lt;/em&gt; now I can ssh to my Linux VM&lt;/p&gt;
+&lt;pre class="code sh"&gt;&lt;a name="rest_code_c30c8848dc16490789875703df38a713-1"&gt;&lt;/a&gt;$ ssh -Y 10.211.55.4
+&lt;/pre&gt;&lt;p&gt;It should already export the correct &lt;em&gt;$DISPLAY&lt;/em&gt; env variable with a value
+that mirrors the &lt;em&gt;X11DisplayOffset&lt;/em&gt; from sshd_config. If not just configure
+it manually:&lt;/p&gt;
+&lt;pre class="code sh"&gt;&lt;a name="rest_code_6e05eaf90a7649bb9f3093f1e34a3b1d-1"&gt;&lt;/a&gt;$ &lt;span class="nb"&gt;export&lt;/span&gt; &lt;span class="nv"&gt;DISPLAY&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;localhost:10.0
+&lt;/pre&gt;&lt;p&gt;And the try running:&lt;/p&gt;
+&lt;pre class="code sh"&gt;&lt;a name="rest_code_c7ddf8f25d2c4e85aaa37793070bea65-1"&gt;&lt;/a&gt;$ xeyes
+&lt;/pre&gt;&lt;p&gt;If everything works alright &lt;em&gt;xeyes&lt;/em&gt; should now be running on you Mac OS X!&lt;/p&gt;
+&lt;p&gt;The really useful part is running applications that don't have a Mac OS X
+port like, for example, &lt;a class="reference external" href="http://www.xilinx.com/products/design-tools/ise-design-suite/ise-webpack.htm"&gt;Xilinx ISE WebPACK&lt;/a&gt;. So here a screenshot of ISE
+running on Mac OS X and synthesizing the &lt;em&gt;pong&lt;/em&gt; example!&lt;/p&gt;
+&lt;img alt="/images/xilinx_ise_mac.jpg" src="https://fabioutzig.com/images/xilinx_ise_mac.jpg"&gt;&lt;/div&gt;</description><category>linux</category><category>mac</category><category>virtualization</category><category>vm</category><guid>https://fabioutzig.com/posts/running-bootcamp-linux-on-parallels/</guid><pubDate>Sun, 07 Apr 2013 03:00:00 GMT</pubDate></item></channel></rss>

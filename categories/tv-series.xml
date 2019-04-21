@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/"><channel><title>Fabio Utzig (tv-series)</title><link>https://fabioutzig.com/</link><description></description><atom:link href="https://fabioutzig.com/categories/tv-series.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Tue, 19 Jul 2016 00:29:26 GMT</lastBuildDate><generator>https://getnikola.com/</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Arrow and cryptographic protocols</title><link>https://fabioutzig.com/posts/arrow-and-cryptographic-protocols/</link><dc:creator>Fabio Utzig</dc:creator><description>&lt;div&gt;&lt;p&gt;This weekend I spent a lot of time watching &lt;a class="reference external" href="http://www.imdb.com/title/tt2193021/?ref_=sr_1"&gt;Arrow&lt;/a&gt;.
+I started watching it last year but then lost interest and now decided to
+get up to speed. I watched episodes 11 to 19 (most recent). It actually
+got quite good.&lt;/p&gt;
+&lt;p&gt;The first 10 or so episodes are kind of self-contained. It's
+like watching &lt;em&gt;Law and Order&lt;/em&gt; were you can watch any episode and you don't
+loose much. The exception are the flashbacks where the story of Oliver
+Queen during the five years he spent as a castaway on an chinese Island and
+was considered dead are told. Btw, the name Green Arrow was never used in
+the series. The vigilante's name in the series is &lt;strong&gt;The Hood&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;But from episode 12 and forward the story gets more serialized so that
+every episode is a continuation of the previous one.&lt;/p&gt;
+&lt;p&gt;Although I'm liking the series, there are so many annoyances that requires
+you to develop new levels of &lt;em&gt;suspension of disbelief&lt;/em&gt;. Let me be clear:
+I have no problem with super-heroes.
+But there are no super-heroes in Arrow. There are only
+heroes that are all normal people (with special training, of course). But than
+you see every hero and villain killing many bandits, police offices and FBI
+agents armed with machine guns using only rudimentary weapons like bow and
+arrow or throwing knives... I roll my eyes everytime...&lt;/p&gt;
+&lt;p&gt;The best parts of the show are the ones told in flashbacks which tell the
+story of Oliver Queen after a shipwreck and his years living with &lt;em&gt;soldiers&lt;/em&gt;.&lt;/p&gt;
+&lt;p&gt;But the real reason for me to write this post is to mention about the computer
+related scenes. Oh gosh... they are so bad that they are funny. One scene really
+deserves special mention. It's on episode 11 and &lt;a class="reference external" href="http://arrow.wikia.com/wiki/Felicity_Smoak"&gt;Felicity Smoak&lt;/a&gt; is hacking a pen
+drive and then what follows is this screen of code:&lt;/p&gt;
+&lt;table class="codetable"&gt;&lt;tr&gt;&lt;td class="linenos"&gt;&lt;div class="linenodiv"&gt;&lt;pre&gt;&lt;a href="https://fabioutzig.com/posts/arrow-and-cryptographic-protocols/#rest_code_896b63945e9443b2b239879807bfc39b-1"&gt; 1&lt;/a&gt;
+&lt;a href="https://fabioutzig.com/posts/arrow-and-cryptographic-protocols/#rest_code_896b63945e9443b2b239879807bfc39b-2"&gt; 2&lt;/a&gt;
+&lt;a href="https://fabioutzig.com/posts/arrow-and-cryptographic-protocols/#rest_code_896b63945e9443b2b239879807bfc39b-3"&gt; 3&lt;/a&gt;
+&lt;a href="https://fabioutzig.com/posts/arrow-and-cryptographic-protocols/#rest_code_896b63945e9443b2b239879807bfc39b-4"&gt; 4&lt;/a&gt;
+&lt;a href="https://fabioutzig.com/posts/arrow-and-cryptographic-protocols/#rest_code_896b63945e9443b2b239879807bfc39b-5"&gt; 5&lt;/a&gt;
+&lt;a href="https://fabioutzig.com/posts/arrow-and-cryptographic-protocols/#rest_code_896b63945e9443b2b239879807bfc39b-6"&gt; 6&lt;/a&gt;
+&lt;a href="https://fabioutzig.com/posts/arrow-and-cryptographic-protocols/#rest_code_896b63945e9443b2b239879807bfc39b-7"&gt; 7&lt;/a&gt;
+&lt;a href="https://fabioutzig.com/posts/arrow-and-cryptographic-protocols/#rest_code_896b63945e9443b2b239879807bfc39b-8"&gt; 8&lt;/a&gt;
+&lt;a href="https://fabioutzig.com/posts/arrow-and-cryptographic-protocols/#rest_code_896b63945e9443b2b239879807bfc39b-9"&gt; 9&lt;/a&gt;
+&lt;a href="https://fabioutzig.com/posts/arrow-and-cryptographic-protocols/#rest_code_896b63945e9443b2b239879807bfc39b-10"&gt;10&lt;/a&gt;
+&lt;a href="https://fabioutzig.com/posts/arrow-and-cryptographic-protocols/#rest_code_896b63945e9443b2b239879807bfc39b-11"&gt;11&lt;/a&gt;
+&lt;a href="https://fabioutzig.com/posts/arrow-and-cryptographic-protocols/#rest_code_896b63945e9443b2b239879807bfc39b-12"&gt;12&lt;/a&gt;
+&lt;a href="https://fabioutzig.com/posts/arrow-and-cryptographic-protocols/#rest_code_896b63945e9443b2b239879807bfc39b-13"&gt;13&lt;/a&gt;
+&lt;a href="https://fabioutzig.com/posts/arrow-and-cryptographic-protocols/#rest_code_896b63945e9443b2b239879807bfc39b-14"&gt;14&lt;/a&gt;
+&lt;a href="https://fabioutzig.com/posts/arrow-and-cryptographic-protocols/#rest_code_896b63945e9443b2b239879807bfc39b-15"&gt;15&lt;/a&gt;
+&lt;a href="https://fabioutzig.com/posts/arrow-and-cryptographic-protocols/#rest_code_896b63945e9443b2b239879807bfc39b-16"&gt;16&lt;/a&gt;
+&lt;a href="https://fabioutzig.com/posts/arrow-and-cryptographic-protocols/#rest_code_896b63945e9443b2b239879807bfc39b-17"&gt;17&lt;/a&gt;
+&lt;a href="https://fabioutzig.com/posts/arrow-and-cryptographic-protocols/#rest_code_896b63945e9443b2b239879807bfc39b-18"&gt;18&lt;/a&gt;
+&lt;a href="https://fabioutzig.com/posts/arrow-and-cryptographic-protocols/#rest_code_896b63945e9443b2b239879807bfc39b-19"&gt;19&lt;/a&gt;
+&lt;a href="https://fabioutzig.com/posts/arrow-and-cryptographic-protocols/#rest_code_896b63945e9443b2b239879807bfc39b-20"&gt;20&lt;/a&gt;
+&lt;a href="https://fabioutzig.com/posts/arrow-and-cryptographic-protocols/#rest_code_896b63945e9443b2b239879807bfc39b-21"&gt;21&lt;/a&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/td&gt;&lt;td class="code"&gt;&lt;pre class="code cpp"&gt;&lt;a name="rest_code_896b63945e9443b2b239879807bfc39b-1"&gt;&lt;/a&gt; &lt;span class="k"&gt;for&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;argc&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="o"&gt;++&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;a name="rest_code_896b63945e9443b2b239879807bfc39b-2"&gt;&lt;/a&gt;    &lt;span class="k"&gt;if&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="n"&gt;argv&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;][&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="sc"&gt;'-'&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;a name="rest_code_896b63945e9443b2b239879807bfc39b-3"&gt;&lt;/a&gt;       &lt;span class="k"&gt;switch&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="n"&gt;argv&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;][&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
+&lt;a name="rest_code_896b63945e9443b2b239879807bfc39b-4"&gt;&lt;/a&gt;          &lt;span class="p"&gt;{&lt;/span&gt;
+&lt;a name="rest_code_896b63945e9443b2b239879807bfc39b-5"&gt;&lt;/a&gt;          &lt;span class="k"&gt;case&lt;/span&gt; &lt;span class="sc"&gt;'j'&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="k"&gt;case&lt;/span&gt; &lt;span class="sc"&gt;'J'&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+&lt;a name="rest_code_896b63945e9443b2b239879807bfc39b-6"&gt;&lt;/a&gt;             &lt;span class="n"&gt;julian&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;a name="rest_code_896b63945e9443b2b239879807bfc39b-7"&gt;&lt;/a&gt;             &lt;span class="k"&gt;break&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;a name="rest_code_896b63945e9443b2b239879807bfc39b-8"&gt;&lt;/a&gt;          &lt;span class="k"&gt;case&lt;/span&gt; &lt;span class="sc"&gt;'q'&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="k"&gt;case&lt;/span&gt; &lt;span class="sc"&gt;'Q'&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+&lt;a name="rest_code_896b63945e9443b2b239879807bfc39b-9"&gt;&lt;/a&gt;             &lt;span class="n"&gt;quiet&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;a name="rest_code_896b63945e9443b2b239879807bfc39b-10"&gt;&lt;/a&gt;             &lt;span class="k"&gt;break&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;a name="rest_code_896b63945e9443b2b239879807bfc39b-11"&gt;&lt;/a&gt;          &lt;span class="k"&gt;case&lt;/span&gt; &lt;span class="sc"&gt;'s'&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="k"&gt;case&lt;/span&gt; &lt;span class="sc"&gt;'S'&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+&lt;a name="rest_code_896b63945e9443b2b239879807bfc39b-12"&gt;&lt;/a&gt;             &lt;span class="n"&gt;sat_no&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;atoi&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="n"&gt;argv&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;a name="rest_code_896b63945e9443b2b239879807bfc39b-13"&gt;&lt;/a&gt;             &lt;span class="k"&gt;break&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;a name="rest_code_896b63945e9443b2b239879807bfc39b-14"&gt;&lt;/a&gt;          &lt;span class="k"&gt;case&lt;/span&gt; &lt;span class="sc"&gt;'d'&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="k"&gt;case&lt;/span&gt; &lt;span class="sc"&gt;'D'&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+&lt;a name="rest_code_896b63945e9443b2b239879807bfc39b-15"&gt;&lt;/a&gt;             &lt;span class="n"&gt;n_days&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;atoi&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="n"&gt;argv&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;a name="rest_code_896b63945e9443b2b239879807bfc39b-16"&gt;&lt;/a&gt;             &lt;span class="k"&gt;break&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;a name="rest_code_896b63945e9443b2b239879807bfc39b-17"&gt;&lt;/a&gt;          &lt;span class="k"&gt;case&lt;/span&gt; &lt;span class="sc"&gt;'f'&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="k"&gt;case&lt;/span&gt; &lt;span class="sc"&gt;'F'&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+&lt;a name="rest_code_896b63945e9443b2b239879807bfc39b-18"&gt;&lt;/a&gt;             &lt;span class="n"&gt;ofile&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;fopen&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="n"&gt;argv&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;"wb"&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;a name="rest_code_896b63945e9443b2b239879807bfc39b-19"&gt;&lt;/a&gt;             &lt;span class="k"&gt;break&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;a name="rest_code_896b63945e9443b2b239879807bfc39b-20"&gt;&lt;/a&gt;          &lt;span class="k"&gt;case&lt;/span&gt; &lt;span class="sc"&gt;'r'&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="k"&gt;case&lt;/span&gt; &lt;span class="sc"&gt;'R'&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+&lt;a name="rest_code_896b63945e9443b2b239879807bfc39b-21"&gt;&lt;/a&gt;             &lt;span class="n"&gt;data_file&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;fopen&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="n"&gt;argv&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="n"&gt;i&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;"ab"&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;p&gt;And then she describes it as: &lt;strong&gt;Military grade cryptographic security protocol&lt;/strong&gt;!!!&lt;/p&gt;
+&lt;img alt="/images/laugh.jpg" src="https://fabioutzig.com/images/laugh.jpg"&gt;
+&lt;p&gt;The code seems to come from this file:&lt;/p&gt;
+&lt;p&gt;&lt;a class="reference external" href="https://bitbucket.org/nloadholtes/lunar/src/fd2d71716eda/jevent.cpp"&gt;https://bitbucket.org/nloadholtes/lunar/src/fd2d71716eda/jevent.cpp&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Also funny was that the screens of code load slowly like if running on very
+old computers... Go watch it on youtube:&lt;/p&gt;
+&lt;p&gt;&lt;a class="reference external" href="http://www.youtube.com/watch?v=o-7ypLaVxsw#t=0m50s"&gt;Felicity Smoak and security lesson!?&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Btw, every single people on the show uses Nokia Lumia's and LeNovo computers running
+Windows 8... go figure!&lt;/p&gt;&lt;/div&gt;</description><category>crypto</category><category>tv-series</category><guid>https://fabioutzig.com/posts/arrow-and-cryptographic-protocols/</guid><pubDate>Sun, 21 Apr 2013 03:00:00 GMT</pubDate></item></channel></rss>

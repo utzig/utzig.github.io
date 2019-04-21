@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article# " lang="en">
+<head>
+<meta charset="utf-8">
+<base href="https://fabioutzig.com/posts/running-bootcamp-linux-on-parallels/">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Running Bootcamp Linux on Parallels | Fabio Utzig</title>
+<link href="../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+<meta content="#5670d4" name="theme-color">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="../../rss.xml">
+<link rel="canonical" href="https://fabioutzig.com/posts/running-bootcamp-linux-on-parallels/">
+<!--[if lt IE 9]><script src="../../assets/js/html5.js"></script><![endif]--><link rel="stylesheet" href="../../css/font.css">
+<link rel="stylesheet" href="../../css/main.css">
+<meta name="author" content="Fabio Utzig">
+<link rel="prev" href="../tcpip-on-an-avr/" title="TCP/IP on an AVR microcontroller" type="text/html">
+<link rel="next" href="../arrow-and-cryptographic-protocols/" title="Arrow and cryptographic protocols" type="text/html">
+<meta property="og:site_name" content="Fabio Utzig">
+<meta property="og:title" content="Running Bootcamp Linux on Parallels">
+<meta property="og:url" content="https://fabioutzig.com/posts/running-bootcamp-linux-on-parallels/">
+<meta property="og:description" content="Some weeks after I bought my MacBook Pro about two years ago I decided
+that I needed to run both Mac OS X, Windows and Linux on it so at the time
+I upgraded the original HDD to a Seagate 7200rpm 750GB">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2013-04-07T00:00:00-03:00">
+<meta property="article:tag" content="linux">
+<meta property="article:tag" content="mac">
+<meta property="article:tag" content="virtualization">
+<meta property="article:tag" content="vm">
+</head>
+<body>
+<a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+
+<!-- Menubar -->
+
+<nav class="navbar navbar-inverse navbar-static-top"><div class="container">
+<!-- This keeps the margins nice -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-navbar" aria-controls="bs-navbar" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://fabioutzig.com/">
+
+                <span id="blog-title">Fabio Utzig</span>
+            </a>
+        </div>
+<!-- /.navbar-header -->
+        <div class="collapse navbar-collapse" id="bs-navbar" aria-expanded="false">
+            <ul class="nav navbar-nav">
+<li>
+<a href="../../archive.html">Archive</a>
+                </li>
+<li>
+<a href="../../categories/">Tags</a>
+                </li>
+<li>
+<a href="../../rss.xml">RSS feed</a>
+
+                
+            </li>
+</ul>
+<ul class="nav navbar-nav navbar-right">
+<li>
+    <a href="index.rst" id="sourcelink">Source</a>
+    </li>
+
+                
+            </ul>
+</div>
+<!-- /.navbar-collapse -->
+    </div>
+<!-- /.container -->
+</nav><!-- End of Menubar --><div class="container" id="content" role="main">
+    <div class="body-content">
+        <!--Body content-->
+        <div class="row">
+            
+            
+<article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">Running Bootcamp Linux on Parallels</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn">
+                    Fabio Utzig
+            </span></p>
+            <p class="dateline"><a href="." rel="bookmark"><time class="published dt-published" datetime="2013-04-07T00:00:00-03:00" itemprop="datePublished" title="2013-04-07 00:00">2013-04-07 00:00</time></a></p>
+                <p class="commentline">
+        
+    <a href="#disqus_thread" data-disqus-identifier="cache/posts/running-bootcamp-linux-on-parallels.html">Comments</a>
+
+
+            
+        </p>
+<p class="sourceline"><a href="index.rst" id="sourcelink">Source</a></p>
+
+        </div>
+        
+
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <div>
+<p>Some weeks after I bought my MacBook Pro about two years ago I decided
+that I needed to run both Mac OS X, Windows and Linux on it so at the time
+I upgraded the original HDD to a Seagate 7200rpm 750GB disk.</p>
+<p>I installed both Windows 7 and Linux as Bootcamp partitions. Bootcamp
+for Mac basically does BIOS emulation and enables you to use old style MBR
+partitions for booting operating systems (and some other things too). Mac OS X
+uses EFI and GPT.</p>
+<p>I use <a class="reference external" href="http://refit.sourceforge.net/">rEFIt</a> to triple boot my system. It displays an operating system
+chooser at startup with fancy graphics and also maintains consistency between
+GPT and MBR partitions.</p>
+<p>But the problem is that it sucks having to reboot everytime you have to run
+a program on another operating system!</p>
+<p>For Windows, I've been running it on <a class="reference external" href="http://www.parallels.com/">Parallels Desktop</a> as well as native. Parallels
+does some fancy integration enabling Windows programs to run on Mac OS X screen
+and works as Mac programs, including clipboard integration and such.</p>
+<p>So my objective was to run Linux on Parallels as well is runs Windows. For
+Windows you just have to create a new VM using a Bootcamp partition and
+Parallels takes care of all configurations and everything is done automatically.
+For Linux you have to do pretty much everything manually. Almost everything
+is standard VM configuration and straightforward for those used to running VM
+software. The hardest part is making the hard disk emulation run from a native
+partition.</p>
+<p>So I started adding the machine's disk, enumeration and selected the partition
+using the GUI. But when I started the machine it hanged with error: <em>missing
+operating system</em>.</p>
+<p>Looking into the internals of a Parallels VM, there is one directory for each
+created VM. For Linux it was located in:</p>
+<blockquote>
+/Users/utzig/Documents/Parallels/Arch Linux.pvm/ST9750420AS (disk0).hdd/</blockquote>
+<p>The contents were basically these (with some extra backups, etc):</p>
+<blockquote>
+DiskDescriptor.xml
+PhysicalGpt.hds
+PhysicalMbr.hds</blockquote>
+<p><em>DiskDescriptor</em>'s contents seemed right. I tried comparing the _hds_ files
+to the Windows VM's counterparts and they were equal. And here's the catch.
+Those who remember the old days of _DOS_ will probably remember that there
+was only one MBR partition that could boot a system. The partition set as
+bootable. So this was the main problem, I had created the Linux VM having my
+Windows partition as bootable!</p>
+<p>So I removed again the hard disk from the Linux VM in Parallels and then
+changed the bootable partition on the command line. To do that on Mac OS X,
+open the terminal and run:</p>
+<pre class="code sh"><a name="rest_code_16ec40a4d763448e97c708a7c9f7d60a-1"></a>$ sudo fdisk -e /dev/rdisk0
+<a name="rest_code_16ec40a4d763448e97c708a7c9f7d60a-2"></a>
+<a name="rest_code_16ec40a4d763448e97c708a7c9f7d60a-3"></a>fdisk: 1&gt; p
+<a name="rest_code_16ec40a4d763448e97c708a7c9f7d60a-4"></a>Disk: /dev/rdisk0   geometry: 91201/255/63 <span class="o">[</span><span class="m">1465149168</span> sectors<span class="o">]</span>
+<a name="rest_code_16ec40a4d763448e97c708a7c9f7d60a-5"></a>Offset: <span class="m">0</span>   Signature: 0xAA55
+<a name="rest_code_16ec40a4d763448e97c708a7c9f7d60a-6"></a>         Starting       Ending
+<a name="rest_code_16ec40a4d763448e97c708a7c9f7d60a-7"></a> <span class="c1">#: id  cyl  hd sec -  cyl  hd sec [     start -       size]</span>
+<a name="rest_code_16ec40a4d763448e97c708a7c9f7d60a-8"></a>------------------------------------------------------------------------
+<a name="rest_code_16ec40a4d763448e97c708a7c9f7d60a-9"></a> 1: EE <span class="m">1023</span> <span class="m">254</span>  <span class="m">63</span> - <span class="m">1023</span> <span class="m">254</span>  <span class="m">63</span> <span class="o">[</span>         <span class="m">1</span> -     409639<span class="o">]</span> &lt;Unknown ID&gt;
+<a name="rest_code_16ec40a4d763448e97c708a7c9f7d60a-10"></a> 2: AF <span class="m">1023</span> <span class="m">254</span>  <span class="m">63</span> - <span class="m">1023</span> <span class="m">254</span>  <span class="m">63</span> <span class="o">[</span>    <span class="m">409640</span> -  997771856<span class="o">]</span> HFS+
+<a name="rest_code_16ec40a4d763448e97c708a7c9f7d60a-11"></a> 3: <span class="m">07</span> <span class="m">1023</span> <span class="m">254</span>  <span class="m">63</span> - <span class="m">1023</span> <span class="m">254</span>  <span class="m">63</span> <span class="o">[</span> <span class="m">998445056</span> -  230230016<span class="o">]</span> HPFS/QNX/AUX
+<a name="rest_code_16ec40a4d763448e97c708a7c9f7d60a-12"></a>*4: <span class="m">83</span> <span class="m">1023</span> <span class="m">254</span>  <span class="m">63</span> - <span class="m">1023</span> <span class="m">254</span>  <span class="m">63</span> <span class="o">[</span><span class="m">1228675072</span> -  236211912<span class="o">]</span> Linux files*
+<a name="rest_code_16ec40a4d763448e97c708a7c9f7d60a-13"></a>fdisk: 1&gt;
+</pre>
+<p>The necessary commands to know here are: <strong>p</strong> to print the partition table, <strong>f</strong>
+to set the bootable partition and <strong>quit</strong> to quit saving. So by running <strong>f 4</strong> I set
+the Linux partition to bootable which is shown by the <strong>star</strong> symbols enclosing
+the line.</p>
+<p>Then I re-added the hard disk to the Linux VM which this time booted to GRUB.
+Linux hanged because it couldn't find the root partition. After some fiddling
+I found that I had to add the line:</p>
+<blockquote>
+MODULES="ahci libahci sd_mod"</blockquote>
+<p>to <em>/etc/mkinitcpio.conf</em> and re-create the initramfs image. That does make some
+sense but I don't know exaclty why it would work without it when booting native.</p>
+<p>After being able to get to the Linux console I spent some time cleaning up to
+run on a VM.</p>
+<p>But the funny part really comes when configuring Linux's graphic programs to
+run on Mac OS X kinda like Parallels does for Windows with Coherence. For Linux
+it relies on X11 and since Mac OS X already has <strong>X11.app</strong> or you can also run
+<a class="reference external" href="http://xquartz.macosforge.org/landing/">XQuartz</a> (which I do), I could enable Linux apps to present on Mac OS X. For
+that I used SSH X11 forwarding. By editing <em>/etc/ssh/sshd_config</em> on Linux and
+changing the following configurations:</p>
+<blockquote>
+X11Forwarding yes
+X11DisplayOffset 10
+X11UseLocalhost yes</blockquote>
+<p>After restarting <em>sshd</em> now I can ssh to my Linux VM</p>
+<pre class="code sh"><a name="rest_code_c30c8848dc16490789875703df38a713-1"></a>$ ssh -Y 10.211.55.4
+</pre>
+<p>It should already export the correct <em>$DISPLAY</em> env variable with a value
+that mirrors the <em>X11DisplayOffset</em> from sshd_config. If not just configure
+it manually:</p>
+<pre class="code sh"><a name="rest_code_6e05eaf90a7649bb9f3093f1e34a3b1d-1"></a>$ <span class="nb">export</span> <span class="nv">DISPLAY</span><span class="o">=</span>localhost:10.0
+</pre>
+<p>And the try running:</p>
+<pre class="code sh"><a name="rest_code_c7ddf8f25d2c4e85aaa37793070bea65-1"></a>$ xeyes
+</pre>
+<p>If everything works alright <em>xeyes</em> should now be running on you Mac OS X!</p>
+<p>The really useful part is running applications that don't have a Mac OS X
+port like, for example, <a class="reference external" href="http://www.xilinx.com/products/design-tools/ise-design-suite/ise-webpack.htm">Xilinx ISE WebPACK</a>. So here a screenshot of ISE
+running on Mac OS X and synthesizing the <em>pong</em> example!</p>
+<img alt="/images/xilinx_ise_mac.jpg" src="../../images/xilinx_ise_mac.jpg">
+</div>
+    </div>
+    <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">
+<li><a class="tag p-category" href="../../categories/linux/" rel="tag">linux</a></li>
+            <li><a class="tag p-category" href="../../categories/mac/" rel="tag">mac</a></li>
+            <li><a class="tag p-category" href="../../categories/virtualization/" rel="tag">virtualization</a></li>
+            <li><a class="tag p-category" href="../../categories/vm/" rel="tag">vm</a></li>
+        </ul>
+<ul class="pager hidden-print">
+<li class="previous">
+                <a href="../tcpip-on-an-avr/" rel="prev" title="TCP/IP on an AVR microcontroller">Previous post</a>
+            </li>
+            <li class="next">
+                <a href="../arrow-and-cryptographic-protocols/" rel="next" title="Arrow and cryptographic protocols">Next post</a>
+            </li>
+        </ul></nav></aside><section class="comments hidden-print"><h2>Comments</h2>
+        
+        
+        <div id="disqus_thread"></div>
+        <script>
+        var disqus_shortname ="utzig",
+            disqus_url="https://fabioutzig.com/posts/running-bootcamp-linux-on-parallels/",
+        disqus_title="Running Bootcamp Linux on Parallels",
+        disqus_identifier="cache/posts/running-bootcamp-linux-on-parallels.html",
+        disqus_config = function () {
+            this.language = "en";
+        };
+        (function() {
+            var dsq = document.createElement('script'); dsq.async = true;
+            dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script><noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a>
+</noscript>
+    <a href="https://disqus.com" class="dsq-brlink" rel="nofollow">Comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+        </section></article><script>var disqus_shortname="utzig";(function(){var a=document.createElement("script");a.async=true;a.src="https://"+disqus_shortname+".disqus.com/count.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(a)}());</script>
+</div>
+        <!--End of body content-->
+
+        <footer id="footer">
+            Contents © 2016         <a href="mailto:utzig@utzig.org">Fabio Utzig</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+            
+        </footer>
+</div>
+</div>
+
+
+            <script src="../../assets/js/all-nocdn.js"></script><script>$('a.image-reference:not(.islink) img:not(.islink)').parent().colorbox({rel:"gal",maxWidth:"100%",maxHeight:"100%",scalePhotos:true});</script><!-- fancy dates --><script>
+    moment.locale("en");
+    fancydates(0, "YYYY-MM-DD HH:mm");
+    </script><!-- end fancy dates -->
+</body>
+</html>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/"><channel><title>Fabio Utzig (arduino)</title><link>https://fabioutzig.com/</link><description></description><atom:link href="https://fabioutzig.com/categories/arduino.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Tue, 19 Jul 2016 00:29:26 GMT</lastBuildDate><generator>https://getnikola.com/</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>TCP/IP on an AVR microcontroller</title><link>https://fabioutzig.com/posts/tcpip-on-an-avr/</link><dc:creator>Fabio Utzig</dc:creator><description>&lt;div&gt;&lt;p&gt;Last week I was going through some boards I bought last year which ended up
+on some pile of electronics trash here and I found this very cheap Microchip
+ENC28J60 based Ethernet to SPI bridge adapter and thought it would be cool
+to use it for something.&lt;/p&gt;
+&lt;p&gt;This little board can be bought on &lt;a class="reference external" href="http://www.aliexpress.com/"&gt;Aliexpress&lt;/a&gt; for a price close to US$ 5 or 6.&lt;/p&gt;
+&lt;p&gt;Here the product's website: &lt;a class="reference external" href="http://www.lctech-inc.com/Hardware/Detail.aspx?id=588fbc2e-ecc1-4013-ac35-69bc83bda1fb"&gt;ENC28J60 Network Module&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;I ended up choosing to use and Seeeduino Mega (Arduino Clone) to run the
+tcp/ip stack and wrote the remaining software myself. I started with one of
+my preferred RTOS's, &lt;a class="reference external" href="http://www.chibios.org/"&gt;ChibiOS/RT&lt;/a&gt; which already has
+a demo for Arduino based boards, thanks to yours truly!&lt;/p&gt;
+&lt;p&gt;Since there is no SPI driver for AVR based microcontrollers, I ended writing one
+myself (and contributing back). That was the easiest part, I guess.&lt;/p&gt;
+&lt;p&gt;After that I created the demo based on an existing uIP (a lightweight TCP/IP
+stack) demo already available on mainstream ChibiOS/RT but tailoring (or stripping
+it down) for the AVR.&lt;/p&gt;
+&lt;p&gt;Since the microcontroller has only 8K for RAM I had to remove the webserver from
+the demo and enabled the hello world app from uIP which is basically just a
+listening socket that has functionality similar to an echo server.&lt;/p&gt;
+&lt;p&gt;The hard part was writing the ENC28J60 driver. I started using a driver from the
+&lt;a class="reference external" href="https://github.com/jcw/ethercard"&gt;EtherCard&lt;/a&gt; project and &lt;em&gt;porting&lt;/em&gt; it to ChibiOS/RT.&lt;/p&gt;
+&lt;p&gt;After some days of debugging and quite some time lost because I was using
+a SPI clock (8MHz) which made communication between the Arduino and ENC28J60 unreliable
+(although far from the limits of the ENC28J60 chip itself which are 20MHz),
+I finally got to the stage of working &lt;em&gt;ping&lt;/em&gt; now.&lt;/p&gt;
+&lt;p&gt;Ping itself is taking currently takes around 4.5 ms on a cross-over cable which is
+ok, I guess. Sometimes it doesn't work which sucks. The issue is probably with
+buffers...&lt;/p&gt;
+&lt;p&gt;From now on things should get a lot easier and probably very soon this will be
+production ready.&lt;/p&gt;
+&lt;p&gt;Finally a photo of my current setup!&lt;/p&gt;
+&lt;img alt="/images/arduino_enc28j60.jpg" src="https://fabioutzig.com/images/arduino_enc28j60.jpg"&gt;
+&lt;p&gt;The project sources are available for those courageous and crazy enough:&lt;/p&gt;
+&lt;p&gt;&lt;a class="reference external" href="https://github.com/utzig/chibios-avr-enc28j60-demo"&gt;https://github.com/utzig/chibios-avr-enc28j60-demo&lt;/a&gt;&lt;/p&gt;&lt;/div&gt;</description><category>arduino</category><category>avr</category><category>chibios</category><category>enc28j60</category><guid>https://fabioutzig.com/posts/tcpip-on-an-avr/</guid><pubDate>Tue, 26 Mar 2013 03:00:00 GMT</pubDate></item></channel></rss>

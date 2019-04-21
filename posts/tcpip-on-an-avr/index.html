@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article# " lang="en">
+<head>
+<meta charset="utf-8">
+<base href="https://fabioutzig.com/posts/tcpip-on-an-avr/">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TCP/IP on an AVR microcontroller | Fabio Utzig</title>
+<link href="../../assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+<meta content="#5670d4" name="theme-color">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="../../rss.xml">
+<link rel="canonical" href="https://fabioutzig.com/posts/tcpip-on-an-avr/">
+<!--[if lt IE 9]><script src="../../assets/js/html5.js"></script><![endif]--><link rel="stylesheet" href="../../css/font.css">
+<link rel="stylesheet" href="../../css/main.css">
+<meta name="author" content="Fabio Utzig">
+<link rel="prev" href="../asus-1025c-review/" title="Asus 1025c" type="text/html">
+<link rel="next" href="../running-bootcamp-linux-on-parallels/" title="Running Bootcamp Linux on Parallels" type="text/html">
+<meta property="og:site_name" content="Fabio Utzig">
+<meta property="og:title" content="TCP/IP on an AVR microcontroller">
+<meta property="og:url" content="https://fabioutzig.com/posts/tcpip-on-an-avr/">
+<meta property="og:description" content="Last week I was going through some boards I bought last year which ended up
+on some pile of electronics trash here and I found this very cheap Microchip
+ENC28J60 based Ethernet to SPI bridge adapter a">
+<meta property="og:type" content="article">
+<meta property="article:published_time" content="2013-03-26T00:00:00-03:00">
+<meta property="article:tag" content="arduino">
+<meta property="article:tag" content="avr">
+<meta property="article:tag" content="chibios">
+<meta property="article:tag" content="enc28j60">
+</head>
+<body>
+<a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+
+<!-- Menubar -->
+
+<nav class="navbar navbar-inverse navbar-static-top"><div class="container">
+<!-- This keeps the margins nice -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-navbar" aria-controls="bs-navbar" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://fabioutzig.com/">
+
+                <span id="blog-title">Fabio Utzig</span>
+            </a>
+        </div>
+<!-- /.navbar-header -->
+        <div class="collapse navbar-collapse" id="bs-navbar" aria-expanded="false">
+            <ul class="nav navbar-nav">
+<li>
+<a href="../../archive.html">Archive</a>
+                </li>
+<li>
+<a href="../../categories/">Tags</a>
+                </li>
+<li>
+<a href="../../rss.xml">RSS feed</a>
+
+                
+            </li>
+</ul>
+<ul class="nav navbar-nav navbar-right">
+<li>
+    <a href="index.rst" id="sourcelink">Source</a>
+    </li>
+
+                
+            </ul>
+</div>
+<!-- /.navbar-collapse -->
+    </div>
+<!-- /.container -->
+</nav><!-- End of Menubar --><div class="container" id="content" role="main">
+    <div class="body-content">
+        <!--Body content-->
+        <div class="row">
+            
+            
+<article class="post-text h-entry hentry postpage" itemscope="itemscope" itemtype="http://schema.org/Article"><header><h1 class="p-name entry-title" itemprop="headline name"><a href="." class="u-url">TCP/IP on an AVR microcontroller</a></h1>
+
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn">
+                    Fabio Utzig
+            </span></p>
+            <p class="dateline"><a href="." rel="bookmark"><time class="published dt-published" datetime="2013-03-26T00:00:00-03:00" itemprop="datePublished" title="2013-03-26 00:00">2013-03-26 00:00</time></a></p>
+                <p class="commentline">
+        
+    <a href="#disqus_thread" data-disqus-identifier="cache/posts/tcpip-on-an-avr.html">Comments</a>
+
+
+            
+        </p>
+<p class="sourceline"><a href="index.rst" id="sourcelink">Source</a></p>
+
+        </div>
+        
+
+    </header><div class="e-content entry-content" itemprop="articleBody text">
+    <div>
+<p>Last week I was going through some boards I bought last year which ended up
+on some pile of electronics trash here and I found this very cheap Microchip
+ENC28J60 based Ethernet to SPI bridge adapter and thought it would be cool
+to use it for something.</p>
+<p>This little board can be bought on <a class="reference external" href="http://www.aliexpress.com/">Aliexpress</a> for a price close to US$ 5 or 6.</p>
+<p>Here the product's website: <a class="reference external" href="http://www.lctech-inc.com/Hardware/Detail.aspx?id=588fbc2e-ecc1-4013-ac35-69bc83bda1fb">ENC28J60 Network Module</a></p>
+<p>I ended up choosing to use and Seeeduino Mega (Arduino Clone) to run the
+tcp/ip stack and wrote the remaining software myself. I started with one of
+my preferred RTOS's, <a class="reference external" href="http://www.chibios.org/">ChibiOS/RT</a> which already has
+a demo for Arduino based boards, thanks to yours truly!</p>
+<p>Since there is no SPI driver for AVR based microcontrollers, I ended writing one
+myself (and contributing back). That was the easiest part, I guess.</p>
+<p>After that I created the demo based on an existing uIP (a lightweight TCP/IP
+stack) demo already available on mainstream ChibiOS/RT but tailoring (or stripping
+it down) for the AVR.</p>
+<p>Since the microcontroller has only 8K for RAM I had to remove the webserver from
+the demo and enabled the hello world app from uIP which is basically just a
+listening socket that has functionality similar to an echo server.</p>
+<p>The hard part was writing the ENC28J60 driver. I started using a driver from the
+<a class="reference external" href="https://github.com/jcw/ethercard">EtherCard</a> project and <em>porting</em> it to ChibiOS/RT.</p>
+<p>After some days of debugging and quite some time lost because I was using
+a SPI clock (8MHz) which made communication between the Arduino and ENC28J60 unreliable
+(although far from the limits of the ENC28J60 chip itself which are 20MHz),
+I finally got to the stage of working <em>ping</em> now.</p>
+<p>Ping itself is taking currently takes around 4.5 ms on a cross-over cable which is
+ok, I guess. Sometimes it doesn't work which sucks. The issue is probably with
+buffers...</p>
+<p>From now on things should get a lot easier and probably very soon this will be
+production ready.</p>
+<p>Finally a photo of my current setup!</p>
+<img alt="/images/arduino_enc28j60.jpg" src="../../images/arduino_enc28j60.jpg"><p>The project sources are available for those courageous and crazy enough:</p>
+<p><a class="reference external" href="https://github.com/utzig/chibios-avr-enc28j60-demo">https://github.com/utzig/chibios-avr-enc28j60-demo</a></p>
+</div>
+    </div>
+    <aside class="postpromonav"><nav><ul itemprop="keywords" class="tags">
+<li><a class="tag p-category" href="../../categories/arduino/" rel="tag">arduino</a></li>
+            <li><a class="tag p-category" href="../../categories/avr/" rel="tag">avr</a></li>
+            <li><a class="tag p-category" href="../../categories/chibios/" rel="tag">chibios</a></li>
+            <li><a class="tag p-category" href="../../categories/enc28j60/" rel="tag">enc28j60</a></li>
+        </ul>
+<ul class="pager hidden-print">
+<li class="previous">
+                <a href="../asus-1025c-review/" rel="prev" title="Asus 1025c">Previous post</a>
+            </li>
+            <li class="next">
+                <a href="../running-bootcamp-linux-on-parallels/" rel="next" title="Running Bootcamp Linux on Parallels">Next post</a>
+            </li>
+        </ul></nav></aside><section class="comments hidden-print"><h2>Comments</h2>
+        
+        
+        <div id="disqus_thread"></div>
+        <script>
+        var disqus_shortname ="utzig",
+            disqus_url="https://fabioutzig.com/posts/tcpip-on-an-avr/",
+        disqus_title="TCP/IP on an AVR microcontroller",
+        disqus_identifier="cache/posts/tcpip-on-an-avr.html",
+        disqus_config = function () {
+            this.language = "en";
+        };
+        (function() {
+            var dsq = document.createElement('script'); dsq.async = true;
+            dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script><noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a>
+</noscript>
+    <a href="https://disqus.com" class="dsq-brlink" rel="nofollow">Comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+        </section></article><script>var disqus_shortname="utzig";(function(){var a=document.createElement("script");a.async=true;a.src="https://"+disqus_shortname+".disqus.com/count.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(a)}());</script>
+</div>
+        <!--End of body content-->
+
+        <footer id="footer">
+            Contents © 2016         <a href="mailto:utzig@utzig.org">Fabio Utzig</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+            
+        </footer>
+</div>
+</div>
+
+
+            <script src="../../assets/js/all-nocdn.js"></script><script>$('a.image-reference:not(.islink) img:not(.islink)').parent().colorbox({rel:"gal",maxWidth:"100%",maxHeight:"100%",scalePhotos:true});</script><!-- fancy dates --><script>
+    moment.locale("en");
+    fancydates(0, "YYYY-MM-DD HH:mm");
+    </script><!-- end fancy dates -->
+</body>
+</html>

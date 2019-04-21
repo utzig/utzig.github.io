@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/"><channel><title>Fabio Utzig (storage)</title><link>https://fabioutzig.com/</link><description></description><atom:link href="https://fabioutzig.com/categories/storage.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Tue, 19 Jul 2016 00:29:26 GMT</lastBuildDate><generator>https://getnikola.com/</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Cheap Chinese SSDs</title><link>https://fabioutzig.com/posts/cheap-chinese-ssds/</link><dc:creator>Fabio Utzig</dc:creator><description>&lt;div&gt;&lt;p&gt;Since I bought a Netbook last year, I wasn't very happy with it's HDD. The reason
+was that I had to disable the power management or at least configure it to not
+allow the spin down of the drive.&lt;/p&gt;
+&lt;pre class="code sh"&gt;&lt;a name="rest_code_6949ae451de94d9785b224b3f48841c5-1"&gt;&lt;/a&gt;$ sudo hdparm -B &lt;span class="m"&gt;255&lt;/span&gt; /dev/sda
+&lt;/pre&gt;&lt;p&gt;The problem was so annoying that I could not even edit a text file on Vim without
+the disc spinning down constantly and hanging text entry for some seconds. Disabling
+power management was effective to solve the problem but then the battery would
+discharge faster. Also since the Netbook is so small and light, using it at any
+surface that is not very flat and stable causes slight movements which could
+damage the drive. It all bored me.&lt;/p&gt;
+&lt;p&gt;So I wanted to install a SSD because it would solve all problems. No more
+disc spinning down, no need to disable power management and no requirement
+of having a stable surface to use it. The problem was the price. A SSD drive
+purchased here in Brazil would end up costing more that the Netbook itself!&lt;/p&gt;
+&lt;p&gt;I did some research and ended up buying a cheap chinese SSD on Aliexpress. The link
+to the seller/product I purchased follows:&lt;/p&gt;
+&lt;p&gt;&lt;a class="reference external" href="http://www.aliexpress.com/item/2-5-Inch-SATA-II-SSD-32GB-4-Channel-Solid-State-Disk-MLC-For-Notebook-computer/571854249.html"&gt;Kingspec 2.5 SATA 32GB&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;After almost two months I'm happy so far. I was afraid it would end up giving
+some problem after some use but until now is like it was on first day. The system
+boots in something like 3 seconds (after BIOS). Everything got boosted up.
+The main problem is the size which prevents the use of some software. But I could
+build a Linux distro based on buildroot for a project I'm working on, I built
+cross toolchains for ARM/AVR/MSP430 and build llvm (which took 8 hours!!!). It suits
+me well since I can do the things I do day to day.&lt;/p&gt;
+&lt;p&gt;When I bought it in January it cost me US$ 43. Now it's selling for US$ 39. I wonder
+how low this price will get in the next 3 months, 1 year. Even being a very simple
+SSD, lacking &lt;em&gt;important&lt;/em&gt; features like TRIM, still was a great purchase. A now with
+more and more embedded boards coming with a SATA controller...&lt;/p&gt;&lt;/div&gt;</description><category>storage</category><guid>https://fabioutzig.com/posts/cheap-chinese-ssds/</guid><pubDate>Mon, 29 Apr 2013 03:00:00 GMT</pubDate></item></channel></rss>

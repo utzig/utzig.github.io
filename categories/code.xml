@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="../assets/xml/rss.xsl" media="all"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/"><channel><title>Fabio Utzig (code)</title><link>https://fabioutzig.com/</link><description></description><atom:link href="https://fabioutzig.com/categories/code.xml" rel="self" type="application/rss+xml"></atom:link><language>en</language><lastBuildDate>Tue, 19 Jul 2016 00:29:26 GMT</lastBuildDate><generator>https://getnikola.com/</generator><docs>http://blogs.law.harvard.edu/tech/rss</docs><item><title>Visualizing Snail Sort</title><link>https://fabioutzig.com/posts/visualizing-snail-sort/</link><dc:creator>Fabio Utzig</dc:creator><description>&lt;div&gt;&lt;script src="https://fabioutzig.com/posts/visualizing-snail-sort/%7B%7B%20site.url%20%7D%7D/js/d3.v3.min.js"&gt;&lt;/script&gt;
+
+&lt;p&gt;Following my previous post on solving a Lattice Path "puzzle", I will
+again write about a puzzle (hopefully for the last time!). This post
+really is mostly just an excuse to use &lt;a href="http://d3js.org/"&gt;D3&lt;/a&gt;!&lt;/p&gt;
+&lt;p&gt;This is a puzzle found on the &lt;a href="http://www.codewars.com/"&gt;CodeWars&lt;/a&gt; website.
+The objective is to write a function that given a square matrix, returns
+a vector with the elements in snail sorted order. This might be better
+understood by looking at this picture:&lt;/p&gt;
+&lt;p&gt;&lt;img alt="Snail Sort" src="https://fabioutzig.com/posts/visualizing-snail-sort/%7B%7B" title="site.url }}/images/snail.png"&gt;&lt;/p&gt;
+&lt;p&gt;This is a cool and simple algorithm to code so I would advise you to give
+it a try before reading the rest of the post.&lt;/p&gt;
+&lt;p&gt;My approach to the problem was what to me seemed to be the most intuitive
+answer. I kept track of the current top, bottom, left and right wall
+coordinates and moved through the external walls, top, right, bottom, left
+in sequence updating the external coordiantes till bottom reached top and
+left reached right. I reckon this is not the most succint algorithm but at
+least it seemed ok to me. My solution was:&lt;/p&gt;
+&lt;p&gt;{% highlight ruby linenos=table %}&lt;/p&gt;
+&lt;p&gt;def snail(array)
+  return [] if array.length == 0 || array[0].length == 0&lt;/p&gt;
+&lt;p&gt;top = left = 0
+  bottom = right = array.length - 1&lt;/p&gt;
+&lt;p&gt;result = []&lt;/p&gt;
+&lt;p&gt;while left &amp;lt;= right &amp;amp;&amp;amp; top &amp;lt;= bottom&lt;br&gt;
+    left.upto(right) { |col| result &amp;lt;&amp;lt; array[top][col] } 
+    top += 1&lt;/p&gt;
+&lt;pre class="code literal-block"&gt;&lt;span&gt;&lt;/span&gt;top.upto(bottom) { |row| result &amp;lt;&amp;lt; array[row][right] }
+right -= 1
+
+right.downto(left) { |col| result &amp;lt;&amp;lt; array[bottom][col] }
+bottom -= 1
+
+bottom.downto(top) { |row| result &amp;lt;&amp;lt; array[row][left] }
+left += 1
+&lt;/pre&gt;
+
+
+&lt;p&gt;end&lt;/p&gt;
+&lt;p&gt;result
+end&lt;/p&gt;
+&lt;p&gt;{% endhighlight %}&lt;/p&gt;
+&lt;p&gt;To make it even easier to understand, I made a visualization of the
+algorithm:&lt;/p&gt;
+&lt;p&gt;&lt;svg id="snail-1" width="300" height="300" style="margin-left:auto;margin-right:auto;display:block;"&gt;&lt;/svg&gt;
+&lt;script src="https://fabioutzig.com/posts/visualizing-snail-sort/%7B%7B%20site.url%20%7D%7D/js/snail-1.js"&gt;&lt;/script&gt;&lt;/p&gt;
+&lt;p&gt;So, the cool thing is that when you submit a solution on CodeWars
+you get access to the whole history of solutions submitted by everyone
+and they are even sorted by how "beautiful" they look.&lt;/p&gt;
+&lt;p&gt;The solution that was considered the most beautiful was this one:&lt;/p&gt;
+&lt;p&gt;{% highlight ruby linenos=table %}&lt;/p&gt;
+&lt;p&gt;def snail(array)
+  array.empty? ? [] : array.shift + snail(array.transpose.reverse)
+end&lt;/p&gt;
+&lt;p&gt;{% endhighlight %}&lt;/p&gt;
+&lt;p&gt;Seriously, when I looked at this my first reaction was "What the f*ck!".&lt;/p&gt;
+&lt;p&gt;Have fun!&lt;/p&gt;&lt;/div&gt;</description><category>code</category><category>puzzle</category><guid>https://fabioutzig.com/posts/visualizing-snail-sort/</guid><pubDate>Fri, 01 Jul 2016 03:00:00 GMT</pubDate></item></channel></rss>

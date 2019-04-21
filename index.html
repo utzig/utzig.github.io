@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article# " lang="en">
+<head>
+<meta charset="utf-8">
+<base href="https://fabioutzig.com/">
+<meta name="description" content="A blog by Fabio Utzig">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fabio Utzig</title>
+<link href="assets/css/all-nocdn.css" rel="stylesheet" type="text/css">
+<meta content="#5670d4" name="theme-color">
+<link rel="alternate" type="application/rss+xml" title="RSS" href="rss.xml">
+<link rel="canonical" href="https://fabioutzig.com/">
+<!--[if lt IE 9]><script src="assets/js/html5.js"></script><![endif]--><link rel="stylesheet" href="css/font.css">
+<link rel="stylesheet" href="css/main.css">
+<link rel="prefetch" href="posts/solving-lattice-path/" type="text/html">
+</head>
+<body>
+<a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+
+<!-- Menubar -->
+
+<nav class="navbar navbar-inverse navbar-static-top"><div class="container">
+<!-- This keeps the margins nice -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-navbar" aria-controls="bs-navbar" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="https://fabioutzig.com/">
+
+                <span id="blog-title">Fabio Utzig</span>
+            </a>
+        </div>
+<!-- /.navbar-header -->
+        <div class="collapse navbar-collapse" id="bs-navbar" aria-expanded="false">
+            <ul class="nav navbar-nav">
+<li>
+<a href="archive.html">Archive</a>
+                </li>
+<li>
+<a href="categories/">Tags</a>
+                </li>
+<li>
+<a href="rss.xml">RSS feed</a>
+
+                
+            </li>
+</ul>
+<ul class="nav navbar-nav navbar-right"></ul>
+</div>
+<!-- /.navbar-collapse -->
+    </div>
+<!-- /.container -->
+</nav><!-- End of Menubar --><div class="container" id="content" role="main">
+    <div class="body-content">
+        <!--Body content-->
+        <div class="row">
+            
+            
+
+    
+<div class="postindex">
+    <article class="h-entry post-text"><header><h1 class="p-name entry-title"><a href="posts/solving-lattice-path/" class="u-url">Solving Lattice Path</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn">
+                Fabio Utzig
+            </span></p>
+            <p class="dateline"><a href="posts/solving-lattice-path/" rel="bookmark"><time class="published dt-published" datetime="2014-06-11T00:00:00-03:00" title="2014-06-11 00:00">2014-06-11 00:00</time></a></p>
+                <p class="commentline">
+        
+    <a href="posts/solving-lattice-path/#disqus_thread" data-disqus-identifier="cache/posts/solving-lattice-path.html">Comments</a>
+
+
+        </p>
+</div>
+    </header><div class="e-content entry-content">
+    <div>
+<p><strong>SPOILER</strong>: if you want to or are working on the exercises from
+<a class="reference external" href="http://projecteuler.net/">Project Euler</a>, you should stop reading now!</p>
+<p>According to Wikipedia, <a class="reference external" href="http://projecteuler.net/">Project Euler</a> is a website dedicated to a
+series of computational problems intended to be solved with computer programs
+<a class="footnote-reference" href="posts/solving-lattice-path/#id2" id="id1">[1]</a>.</p>
+<table class="docutils footnote" frame="void" id="id2" rules="none">
+<colgroup>
+<col class="label">
+<col>
+</colgroup>
+<tbody valign="top"><tr>
+<td class="label"><a class="fn-backref" href="posts/solving-lattice-path/#id1">[1]</a></td>
+<td><a class="reference external" href="http://en.wikipedia.org/wiki/Project_Euler">http://en.wikipedia.org/wiki/Project_Euler</a></td>
+</tr></tbody>
+</table>
+<p>The problems are mostly math related and one main characteristic of most problems
+is that they are usually hard to solve through brute force because they usually
+have polynomial/exponential complexity and questions always ask for very large input
+or number of inputs.</p>
+<p>Problem 15, Lattice Paths, is one that I found really interesting because it's
+a geometric problem and with an intuitive solution. Let me copy here the text from
+the problem.</p>
+<blockquote>
+Starting in the top left corner of a 2×2 grid, and only being able to move to the
+right and down, there are exactly 6 routes to the bottom right corner.</blockquote>
+<img alt="/images/lattice_path.png" src="images/lattice_path.png"><!--  --><blockquote>
+How many such routes are there through a 20×20 grid?</blockquote>
+<p>So my first reaction was: <em>I'll just do a brute force algorithm and see what happens!</em></p>
+<p>I wrote an algorithm that uses recursion to find all possible paths. This is how it
+ended up:</p>
+<table class="codetable"><tr>
+<td class="linenos"><div class="linenodiv"><pre><a href="posts/solving-lattice-path/#rest_code_8c0f4c15eb474a79bee726de105420e8-1"> 1</a>
+<a href="posts/solving-lattice-path/#rest_code_8c0f4c15eb474a79bee726de105420e8-2"> 2</a>
+<a href="posts/solving-lattice-path/#rest_code_8c0f4c15eb474a79bee726de105420e8-3"> 3</a>
+<a href="posts/solving-lattice-path/#rest_code_8c0f4c15eb474a79bee726de105420e8-4"> 4</a>
+<a href="posts/solving-lattice-path/#rest_code_8c0f4c15eb474a79bee726de105420e8-5"> 5</a>
+<a href="posts/solving-lattice-path/#rest_code_8c0f4c15eb474a79bee726de105420e8-6"> 6</a>
+<a href="posts/solving-lattice-path/#rest_code_8c0f4c15eb474a79bee726de105420e8-7"> 7</a>
+<a href="posts/solving-lattice-path/#rest_code_8c0f4c15eb474a79bee726de105420e8-8"> 8</a>
+<a href="posts/solving-lattice-path/#rest_code_8c0f4c15eb474a79bee726de105420e8-9"> 9</a>
+<a href="posts/solving-lattice-path/#rest_code_8c0f4c15eb474a79bee726de105420e8-10">10</a>
+<a href="posts/solving-lattice-path/#rest_code_8c0f4c15eb474a79bee726de105420e8-11">11</a>
+<a href="posts/solving-lattice-path/#rest_code_8c0f4c15eb474a79bee726de105420e8-12">12</a>
+<a href="posts/solving-lattice-path/#rest_code_8c0f4c15eb474a79bee726de105420e8-13">13</a>
+<a href="posts/solving-lattice-path/#rest_code_8c0f4c15eb474a79bee726de105420e8-14">14</a>
+<a href="posts/solving-lattice-path/#rest_code_8c0f4c15eb474a79bee726de105420e8-15">15</a>
+<a href="posts/solving-lattice-path/#rest_code_8c0f4c15eb474a79bee726de105420e8-16">16</a>
+<a href="posts/solving-lattice-path/#rest_code_8c0f4c15eb474a79bee726de105420e8-17">17</a>
+<a href="posts/solving-lattice-path/#rest_code_8c0f4c15eb474a79bee726de105420e8-18">18</a>
+<a href="posts/solving-lattice-path/#rest_code_8c0f4c15eb474a79bee726de105420e8-19">19</a>
+<a href="posts/solving-lattice-path/#rest_code_8c0f4c15eb474a79bee726de105420e8-20">20</a>
+<a href="posts/solving-lattice-path/#rest_code_8c0f4c15eb474a79bee726de105420e8-21">21</a></pre></div></td>
+<td class="code"><pre class="code ruby"><a name="rest_code_8c0f4c15eb474a79bee726de105420e8-1"></a> <span class="k">class</span> <span class="nc">LatticePath</span>
+<a name="rest_code_8c0f4c15eb474a79bee726de105420e8-2"></a>   <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+<a name="rest_code_8c0f4c15eb474a79bee726de105420e8-3"></a>     <span class="vi">@size</span> <span class="o">=</span> <span class="n">size</span>
+<a name="rest_code_8c0f4c15eb474a79bee726de105420e8-4"></a>   <span class="k">end</span>
+<a name="rest_code_8c0f4c15eb474a79bee726de105420e8-5"></a>
+<a name="rest_code_8c0f4c15eb474a79bee726de105420e8-6"></a>   <span class="k">def</span> <span class="nf">total</span>
+<a name="rest_code_8c0f4c15eb474a79bee726de105420e8-7"></a>     <span class="n">moves</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<a name="rest_code_8c0f4c15eb474a79bee726de105420e8-8"></a>   <span class="k">end</span>
+<a name="rest_code_8c0f4c15eb474a79bee726de105420e8-9"></a>
+<a name="rest_code_8c0f4c15eb474a79bee726de105420e8-10"></a>   <span class="kp">private</span>
+<a name="rest_code_8c0f4c15eb474a79bee726de105420e8-11"></a>
+<a name="rest_code_8c0f4c15eb474a79bee726de105420e8-12"></a>   <span class="k">def</span> <span class="nf">moves</span><span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="n">cols</span><span class="p">)</span>
+<a name="rest_code_8c0f4c15eb474a79bee726de105420e8-13"></a>     <span class="k">return</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">rows</span> <span class="o">==</span> <span class="vi">@size</span> <span class="o">&amp;&amp;</span> <span class="n">cols</span> <span class="o">==</span> <span class="vi">@size</span>
+<a name="rest_code_8c0f4c15eb474a79bee726de105420e8-14"></a>     <span class="k">return</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">rows</span> <span class="o">&gt;</span> <span class="vi">@size</span> <span class="o">||</span> <span class="n">cols</span> <span class="o">&gt;</span> <span class="vi">@size</span>
+<a name="rest_code_8c0f4c15eb474a79bee726de105420e8-15"></a>     <span class="k">return</span> <span class="n">moves</span><span class="p">(</span><span class="n">rows</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">cols</span><span class="p">)</span> <span class="o">+</span> <span class="n">moves</span><span class="p">(</span><span class="n">rows</span><span class="p">,</span> <span class="n">cols</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+<a name="rest_code_8c0f4c15eb474a79bee726de105420e8-16"></a>   <span class="k">end</span>
+<a name="rest_code_8c0f4c15eb474a79bee726de105420e8-17"></a> <span class="k">end</span>
+<a name="rest_code_8c0f4c15eb474a79bee726de105420e8-18"></a>
+<a name="rest_code_8c0f4c15eb474a79bee726de105420e8-19"></a> <span class="n">sides</span> <span class="o">=</span> <span class="p">(</span><span class="no">ARGV</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="o">&amp;&amp;</span> <span class="no">ARGV</span><span class="o">[</span><span class="mi">0</span><span class="o">].</span><span class="n">to_i</span><span class="p">)</span> <span class="o">||</span> <span class="mi">20</span> <span class="c1"># default value if none specified</span>
+<a name="rest_code_8c0f4c15eb474a79bee726de105420e8-20"></a> <span class="n">lattice_path</span> <span class="o">=</span> <span class="no">LatticePath</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">sides</span><span class="p">)</span>
+<a name="rest_code_8c0f4c15eb474a79bee726de105420e8-21"></a> <span class="nb">puts</span> <span class="n">lattice_path</span><span class="o">.</span><span class="n">total</span>
+</pre></td>
+</tr></table>
+<p>Well, how bad could it be? Turn outs very bad.</p>
+<p>Running this for less than 13 sides was OK. Running this for 14 sides was
+enough to take quite some time. Running for more than 14, it just takes too
+long. I suppose it would take years for 20 sides. It obviously explodes in
+complexity very quickly.</p>
+<p>Looking up for ways to solve this or similar problems, I ended up watching this
+video from <a class="reference external" href="https://www.khanacademy.org/">Khan Academy</a> where Salman basically gives it away!</p>
+<div class="section" id="path-counting-brain-teaser">
+<h2>Path Counting Brain Teaser</h2>
+<iframe width="560" height="420" src="https://www.youtube.com/embed/9QduzzW10uA?color=white&amp;theme=light">
+</iframe><p>I will not try to re-explain what's in the video so you should watch it first.
+I'll follow from where the video ends, and will develop an algorithm that only
+requires an array of size equal to one _side_ of the matrix to solve this problem.</p>
+<p>Basically after filling in values for each cell, what we get is an matrix like
+this:</p>
+<img alt="/images/full_grid.png" src="images/full_grid.png"><p>And looking more carefully, we can see that this matrix is symmetric. The coloring
+I used on the pictures should make that clear. We are interested in the value on
+the main diagonal so we can remove everything below it.</p>
+<img alt="/images/half_grid.png" src="images/half_grid.png"><p>The next step was to recognize that each cell depends only on the cell to the left
+and above it. The element in the diagonal is always the element above it multiplied
+by 2 and the other elements in that row are the sum of the element in the cell to
+the left with the element in the cell above them. The picture below should make
+it clearer.</p>
+<img alt="/images/grid_formula.png" src="images/grid_formula.png"><p>Now even more interesting is observing that every element only depends on the
+elements exactly above them and once a new row is calculated from the row above
+it, the former is not necessary anymore. So in the end the whole problem can be
+solved by a simple array of size equal to the number of cell on one side of the
+square matrix!</p>
+<p>And here's my optimized solution to the problem:</p>
+<table class="codetable"><tr>
+<td class="linenos"><div class="linenodiv"><pre><a href="posts/solving-lattice-path/#rest_code_ba4127145559491f8697a6f3f292eb0d-1"> 1</a>
+<a href="posts/solving-lattice-path/#rest_code_ba4127145559491f8697a6f3f292eb0d-2"> 2</a>
+<a href="posts/solving-lattice-path/#rest_code_ba4127145559491f8697a6f3f292eb0d-3"> 3</a>
+<a href="posts/solving-lattice-path/#rest_code_ba4127145559491f8697a6f3f292eb0d-4"> 4</a>
+<a href="posts/solving-lattice-path/#rest_code_ba4127145559491f8697a6f3f292eb0d-5"> 5</a>
+<a href="posts/solving-lattice-path/#rest_code_ba4127145559491f8697a6f3f292eb0d-6"> 6</a>
+<a href="posts/solving-lattice-path/#rest_code_ba4127145559491f8697a6f3f292eb0d-7"> 7</a>
+<a href="posts/solving-lattice-path/#rest_code_ba4127145559491f8697a6f3f292eb0d-8"> 8</a>
+<a href="posts/solving-lattice-path/#rest_code_ba4127145559491f8697a6f3f292eb0d-9"> 9</a>
+<a href="posts/solving-lattice-path/#rest_code_ba4127145559491f8697a6f3f292eb0d-10">10</a>
+<a href="posts/solving-lattice-path/#rest_code_ba4127145559491f8697a6f3f292eb0d-11">11</a>
+<a href="posts/solving-lattice-path/#rest_code_ba4127145559491f8697a6f3f292eb0d-12">12</a>
+<a href="posts/solving-lattice-path/#rest_code_ba4127145559491f8697a6f3f292eb0d-13">13</a>
+<a href="posts/solving-lattice-path/#rest_code_ba4127145559491f8697a6f3f292eb0d-14">14</a>
+<a href="posts/solving-lattice-path/#rest_code_ba4127145559491f8697a6f3f292eb0d-15">15</a>
+<a href="posts/solving-lattice-path/#rest_code_ba4127145559491f8697a6f3f292eb0d-16">16</a>
+<a href="posts/solving-lattice-path/#rest_code_ba4127145559491f8697a6f3f292eb0d-17">17</a></pre></div></td>
+<td class="code"><pre class="code ruby"><a name="rest_code_ba4127145559491f8697a6f3f292eb0d-1"></a> <span class="c1">#!/usr/bin/env ruby</span>
+<a name="rest_code_ba4127145559491f8697a6f3f292eb0d-2"></a>
+<a name="rest_code_ba4127145559491f8697a6f3f292eb0d-3"></a> <span class="k">def</span> <span class="nf">lattice_path</span><span class="p">(</span><span class="n">sides</span><span class="p">)</span>
+<a name="rest_code_ba4127145559491f8697a6f3f292eb0d-4"></a>   <span class="n">a</span> <span class="o">=</span> <span class="nb">Array</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">sides</span><span class="p">)</span> <span class="p">{</span> <span class="mi">1</span> <span class="p">}</span>
+<a name="rest_code_ba4127145559491f8697a6f3f292eb0d-5"></a>
+<a name="rest_code_ba4127145559491f8697a6f3f292eb0d-6"></a>   <span class="mi">1</span><span class="o">.</span><span class="n">upto</span><span class="p">(</span><span class="n">sides</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">col</span><span class="o">|</span>
+<a name="rest_code_ba4127145559491f8697a6f3f292eb0d-7"></a>     <span class="n">a</span><span class="o">[</span><span class="n">col</span><span class="o">]</span> <span class="o">*=</span> <span class="mi">2</span>
+<a name="rest_code_ba4127145559491f8697a6f3f292eb0d-8"></a>     <span class="p">(</span><span class="n">col</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">upto</span><span class="p">(</span><span class="n">sides</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">n</span><span class="o">|</span>
+<a name="rest_code_ba4127145559491f8697a6f3f292eb0d-9"></a>       <span class="n">a</span><span class="o">[</span><span class="n">n</span><span class="o">]</span> <span class="o">=</span> <span class="n">a</span><span class="o">[</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="o">]</span> <span class="o">+</span> <span class="n">a</span><span class="o">[</span><span class="n">n</span><span class="o">]</span>
+<a name="rest_code_ba4127145559491f8697a6f3f292eb0d-10"></a>     <span class="k">end</span>
+<a name="rest_code_ba4127145559491f8697a6f3f292eb0d-11"></a>   <span class="k">end</span>
+<a name="rest_code_ba4127145559491f8697a6f3f292eb0d-12"></a>
+<a name="rest_code_ba4127145559491f8697a6f3f292eb0d-13"></a>   <span class="n">a</span><span class="o">[</span><span class="n">sides</span> <span class="o">-</span> <span class="mi">1</span><span class="o">]</span>
+<a name="rest_code_ba4127145559491f8697a6f3f292eb0d-14"></a> <span class="k">end</span>
+<a name="rest_code_ba4127145559491f8697a6f3f292eb0d-15"></a>
+<a name="rest_code_ba4127145559491f8697a6f3f292eb0d-16"></a> <span class="n">sides</span> <span class="o">=</span> <span class="p">(</span><span class="no">ARGV</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="o">&amp;&amp;</span> <span class="no">ARGV</span><span class="o">[</span><span class="mi">0</span><span class="o">].</span><span class="n">to_i</span><span class="p">)</span> <span class="o">||</span> <span class="mi">20</span> <span class="c1"># default value if none specified</span>
+<a name="rest_code_ba4127145559491f8697a6f3f292eb0d-17"></a> <span class="nb">puts</span> <span class="n">lattice_path</span><span class="p">(</span><span class="n">sides</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+</pre></td>
+</tr></table>
+<p>Have fun!</p>
+</div>
+</div>
+    </div>
+    </article><article class="h-entry post-text"><header><h1 class="p-name entry-title"><a href="posts/table-driven-state-machines/" class="u-url">Table-driven state machines</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn">
+                Fabio Utzig
+            </span></p>
+            <p class="dateline"><a href="posts/table-driven-state-machines/" rel="bookmark"><time class="published dt-published" datetime="2013-06-21T00:00:00-03:00" title="2013-06-21 00:00">2013-06-21 00:00</time></a></p>
+                <p class="commentline">
+        
+    <a href="posts/table-driven-state-machines/#disqus_thread" data-disqus-identifier="cache/posts/table-driven-state-machines.html">Comments</a>
+
+
+        </p>
+</div>
+    </header><div class="e-content entry-content">
+    <div>
+<p>Some weeks ago I was writing a protocol stack for a serial RFID reader for
+a commercial project I'm working on. Apart from one command, all the others
+are standard serial communication where you send a fixed data structure and
+receive a fixed data structure. But there's this command that does inventory,
+which means, get all the RFID <em>tags</em> in the area. You request the data and it
+starts sending many different packets for each <em>tag</em>.</p>
+<p>The response format and size can vary but it always starts with a fixed
+header which can be "RITM", "BITM", "EITM" or "IITM". So I basically wrote
+a state machine do wait for one of these possible headers to start reading
+the remaining data (size depends on the header type).</p>
+<p>To make it easier I draw the following flowchart:</p>
+<img alt="/images/rfid_header_sm.jpg" src="images/rfid_header_sm.jpg"><p>I guess not many people will be impressed by my great drawing skills! Btw,
+if anyone can suggest me a good flow charting software for free or low-cost
+I'd be thankful.</p>
+<p>The only missing edges on this diagram are the ones that connect
+all states back to state <em>S0</em> when an invalid character is received.</p>
+<div class="section" id="rudimentary-state-machine-code">
+<h2>Rudimentary state machine code</h2>
+<p>The code I initially wrote to solve the problem is shown below:</p>
+<pre class="code cpp"><a name="rest_code_eeb3c08f09be426e93067a4359088bf0-1"></a><span class="kt">uint8_t</span> <span class="n">rxbuf</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-2"></a><span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-3"></a><span class="kt">uint8_t</span> <span class="n">b</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-4"></a><span class="kt">uint8_t</span> <span class="n">idx</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-5"></a>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-6"></a><span class="cp">#define S0 0</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-7"></a><span class="cp">#define S1 1</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-8"></a><span class="cp">#define S2 2</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-9"></a><span class="cp">#define S3 3</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-10"></a><span class="cp">#define S4 4</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-11"></a>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-12"></a><span class="k">while</span> <span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-13"></a>    <span class="kt">uint8_t</span> <span class="n">state</span> <span class="o">=</span> <span class="n">S0</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-14"></a>    <span class="n">idx</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-15"></a>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-16"></a>    <span class="k">do</span> <span class="p">{</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-17"></a>        <span class="n">err</span> <span class="o">=</span> <span class="n">serial_read</span><span class="p">(</span><span class="o">&amp;</span><span class="n">rxbuf</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="mi">1</span><span class="p">);</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-18"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">err</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">)</span> <span class="k">continue</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-19"></a>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-20"></a>        <span class="k">switch</span> <span class="p">(</span><span class="n">state</span><span class="p">)</span> <span class="p">{</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-21"></a>        <span class="k">case</span> <span class="nl">S0</span><span class="p">:</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-22"></a>            <span class="n">b</span> <span class="o">=</span> <span class="n">rxbuf</span><span class="p">[</span><span class="n">idx</span><span class="p">];</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-23"></a>            <span class="k">if</span> <span class="p">(</span><span class="n">isvalid</span><span class="p">(</span><span class="n">b</span><span class="p">))</span> <span class="p">{</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-24"></a>                <span class="n">state</span> <span class="o">=</span> <span class="n">S1</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-25"></a>                <span class="n">idx</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-26"></a>            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-27"></a>                <span class="n">idx</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-28"></a>            <span class="p">}</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-29"></a>            <span class="k">break</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-30"></a>        <span class="k">case</span> <span class="nl">S1</span><span class="p">:</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-31"></a>            <span class="n">b</span> <span class="o">=</span> <span class="n">rxbuf</span><span class="p">[</span><span class="n">idx</span><span class="p">];</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-32"></a>            <span class="k">if</span> <span class="p">(</span><span class="n">b</span> <span class="o">==</span> <span class="sc">'I'</span><span class="p">)</span> <span class="p">{</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-33"></a>                <span class="n">state</span> <span class="o">=</span> <span class="n">S2</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-34"></a>                <span class="n">idx</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-35"></a>            <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">isvalid</span><span class="p">(</span><span class="n">b</span><span class="p">))</span> <span class="p">{</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-36"></a>                <span class="n">state</span> <span class="o">=</span> <span class="n">S1</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-37"></a>                <span class="n">rxbuf</span><span class="p">[</span><span class="n">idx</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">rxbuf</span><span class="p">[</span><span class="n">idx</span><span class="p">];</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-38"></a>                <span class="n">idx</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-39"></a>            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-40"></a>                <span class="n">state</span> <span class="o">=</span> <span class="n">S0</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-41"></a>                <span class="n">idx</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-42"></a>            <span class="p">}</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-43"></a>            <span class="k">break</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-44"></a>        <span class="k">case</span> <span class="nl">S2</span><span class="p">:</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-45"></a>            <span class="n">b</span> <span class="o">=</span> <span class="n">rxbuf</span><span class="p">[</span><span class="n">idx</span><span class="p">];</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-46"></a>            <span class="k">if</span> <span class="p">(</span><span class="n">b</span> <span class="o">==</span> <span class="sc">'T'</span><span class="p">)</span> <span class="p">{</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-47"></a>                <span class="n">state</span> <span class="o">=</span> <span class="n">S3</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-48"></a>                <span class="n">idx</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-49"></a>            <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">isvalid</span><span class="p">(</span><span class="n">b</span><span class="p">))</span> <span class="p">{</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-50"></a>                <span class="n">state</span> <span class="o">=</span> <span class="n">S1</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-51"></a>                <span class="n">rxbuf</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">rxbuf</span><span class="p">[</span><span class="n">idx</span><span class="p">];</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-52"></a>                <span class="n">idx</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-53"></a>            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-54"></a>                <span class="n">state</span> <span class="o">=</span> <span class="n">S0</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-55"></a>                <span class="n">idx</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-56"></a>            <span class="p">}</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-57"></a>            <span class="k">break</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-58"></a>        <span class="k">case</span> <span class="nl">S3</span><span class="p">:</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-59"></a>            <span class="n">b</span> <span class="o">=</span> <span class="n">rxbuf</span><span class="p">[</span><span class="n">idx</span><span class="p">];</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-60"></a>            <span class="k">if</span> <span class="p">(</span><span class="n">b</span> <span class="o">==</span> <span class="sc">'M'</span><span class="p">)</span> <span class="p">{</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-61"></a>                <span class="n">state</span> <span class="o">=</span> <span class="n">S4</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-62"></a>            <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">isvalid</span><span class="p">(</span><span class="n">b</span><span class="p">))</span> <span class="p">{</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-63"></a>                <span class="n">state</span> <span class="o">=</span> <span class="n">S1</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-64"></a>                <span class="n">rxbuf</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">rxbuf</span><span class="p">[</span><span class="n">idx</span><span class="p">];</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-65"></a>                <span class="n">idx</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-66"></a>            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-67"></a>                <span class="n">state</span> <span class="o">=</span> <span class="n">S0</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-68"></a>                <span class="n">idx</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-69"></a>            <span class="p">}</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-70"></a>            <span class="k">break</span><span class="p">;</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-71"></a>        <span class="p">}</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-72"></a>    <span class="p">}</span> <span class="k">while</span> <span class="p">(</span><span class="n">state</span> <span class="o">!=</span> <span class="n">S4</span><span class="p">);</span>
+<a name="rest_code_eeb3c08f09be426e93067a4359088bf0-73"></a><span class="p">}</span>
+</pre>
+<p>The function <em>isvalid</em> tests if the character received is a valid
+starting character for the header strings know.</p>
+<pre class="code cpp"><a name="rest_code_ea8297b0b12a4e21ba904a7ddbbd694e-1"></a><span class="k">static</span> <span class="kt">uint8_t</span> <span class="nf">isvalid</span><span class="p">(</span><span class="kt">uint8_t</span> <span class="n">b</span><span class="p">)</span>
+<a name="rest_code_ea8297b0b12a4e21ba904a7ddbbd694e-2"></a><span class="p">{</span>
+<a name="rest_code_ea8297b0b12a4e21ba904a7ddbbd694e-3"></a>    <span class="k">return</span> <span class="p">(</span><span class="n">b</span> <span class="o">==</span> <span class="sc">'R'</span> <span class="o">||</span> <span class="n">b</span> <span class="o">==</span> <span class="sc">'B'</span> <span class="o">||</span> <span class="n">b</span> <span class="o">==</span> <span class="sc">'E'</span> <span class="o">||</span> <span class="n">b</span> <span class="o">==</span> <span class="sc">'I'</span><span class="p">);</span>
+<a name="rest_code_ea8297b0b12a4e21ba904a7ddbbd694e-4"></a><span class="p">}</span>
+</pre>
+<p>It worked as expect but it should be clear that it's messy and has a spaghetti
+structure which could quickly grow into unmaintainable code. The problem
+is having a <em>case</em> for each state and inside it a nested if/elseif test for
+the received character.</p>
+</div>
+<div class="section" id="towards-a-better-state-machine-structure">
+<h2>Towards a better state machine structure</h2>
+<p>While reading <a href="http://www.amazon.com/dp/1556220782/?tag=utzig-20" target="_blank">Programming Game AI by Example</a> (great book!)
+I stumbled across some designs for state machines and in particular one
+table-driven which doesn't require object orientation and polymorphism. Although
+the book only gives a rough example, it is clear enough. I previously saw a very
+similar approach used in lexers where a given input regular expression generates
+a table-driven state machine.</p>
+<p>To get started the first thing I did was to define a <em>struct</em> to accomodate the
+necessary data. Here's how it looks:</p>
+<pre class="code cpp"><a name="rest_code_1adef2a098024339aea1e7a562ec4495-1"></a><span class="k">typedef</span> <span class="k">struct</span>
+<a name="rest_code_1adef2a098024339aea1e7a562ec4495-2"></a><span class="p">{</span>
+<a name="rest_code_1adef2a098024339aea1e7a562ec4495-3"></a>    <span class="kt">int8_t</span> <span class="n">cur_state</span><span class="p">;</span>
+<a name="rest_code_1adef2a098024339aea1e7a562ec4495-4"></a>    <span class="kt">uint8_t</span> <span class="p">(</span><span class="o">*</span><span class="n">valid</span><span class="p">)(</span><span class="kt">char</span><span class="p">);</span>
+<a name="rest_code_1adef2a098024339aea1e7a562ec4495-5"></a>    <span class="kt">int8_t</span> <span class="n">next_state</span><span class="p">;</span>
+<a name="rest_code_1adef2a098024339aea1e7a562ec4495-6"></a>    <span class="kt">uint8_t</span> <span class="n">index</span><span class="p">;</span>
+<a name="rest_code_1adef2a098024339aea1e7a562ec4495-7"></a><span class="p">}</span> <span class="n">transition_t</span><span class="p">;</span>
+</pre>
+<p>Basically to decide the new state what is used is a current state and the last
+character received. But using the last character directly has many drawbacks
+so I decided to use a function (<em>valid</em>) to decide the next state. The <em>index</em>
+variable is custom data I need to get the position where the character will
+be inserted in the input buffer. This is not really part of the state machine.</p>
+<p>Here's what the declaration of the final state machine looks like:</p>
+<pre class="code cpp"><a name="rest_code_b2a299d66a104f999b466a55d6d40200-1"></a><span class="cp">#define S0 0</span>
+<a name="rest_code_b2a299d66a104f999b466a55d6d40200-2"></a><span class="cp">#define S1 1</span>
+<a name="rest_code_b2a299d66a104f999b466a55d6d40200-3"></a><span class="cp">#define S2 2</span>
+<a name="rest_code_b2a299d66a104f999b466a55d6d40200-4"></a><span class="cp">#define S3 3</span>
+<a name="rest_code_b2a299d66a104f999b466a55d6d40200-5"></a><span class="cp">#define S4 4</span>
+<a name="rest_code_b2a299d66a104f999b466a55d6d40200-6"></a>
+<a name="rest_code_b2a299d66a104f999b466a55d6d40200-7"></a><span class="k">static</span> <span class="n">transition_t</span> <span class="n">trs</span><span class="p">[]</span> <span class="o">=</span> <span class="p">{</span>
+<a name="rest_code_b2a299d66a104f999b466a55d6d40200-8"></a>    <span class="cm">/* STATE 0 */</span>
+<a name="rest_code_b2a299d66a104f999b466a55d6d40200-9"></a>    <span class="p">{</span>    <span class="n">S0</span><span class="p">,</span>      <span class="n">initial_char</span><span class="p">,</span>   <span class="n">S1</span><span class="p">,</span>  <span class="mi">0</span>   <span class="p">},</span>
+<a name="rest_code_b2a299d66a104f999b466a55d6d40200-10"></a>    <span class="p">{</span>    <span class="n">S0</span><span class="p">,</span>          <span class="n">_true</span><span class="p">,</span>      <span class="n">S0</span><span class="p">,</span>  <span class="mi">0</span>   <span class="p">},</span>
+<a name="rest_code_b2a299d66a104f999b466a55d6d40200-11"></a>    <span class="cm">/* STATE 1 */</span>
+<a name="rest_code_b2a299d66a104f999b466a55d6d40200-12"></a>    <span class="p">{</span>    <span class="n">S1</span><span class="p">,</span>         <span class="n">I_char</span><span class="p">,</span>      <span class="n">S2</span><span class="p">,</span>  <span class="mi">1</span>   <span class="p">},</span>
+<a name="rest_code_b2a299d66a104f999b466a55d6d40200-13"></a>    <span class="p">{</span>    <span class="n">S1</span><span class="p">,</span>      <span class="n">initial_char</span><span class="p">,</span>   <span class="n">S1</span><span class="p">,</span>  <span class="mi">0</span>   <span class="p">},</span>
+<a name="rest_code_b2a299d66a104f999b466a55d6d40200-14"></a>    <span class="p">{</span>    <span class="n">S1</span><span class="p">,</span>          <span class="n">_true</span><span class="p">,</span>      <span class="n">S0</span><span class="p">,</span>  <span class="mi">0</span>   <span class="p">},</span>
+<a name="rest_code_b2a299d66a104f999b466a55d6d40200-15"></a>    <span class="cm">/* STATE 2 */</span>
+<a name="rest_code_b2a299d66a104f999b466a55d6d40200-16"></a>    <span class="p">{</span>    <span class="n">S2</span><span class="p">,</span>         <span class="n">T_char</span><span class="p">,</span>      <span class="n">S3</span><span class="p">,</span>  <span class="mi">2</span>   <span class="p">},</span>
+<a name="rest_code_b2a299d66a104f999b466a55d6d40200-17"></a>    <span class="p">{</span>    <span class="n">S2</span><span class="p">,</span>      <span class="n">initial_char</span><span class="p">,</span>   <span class="n">S1</span><span class="p">,</span>  <span class="mi">0</span>   <span class="p">},</span>
+<a name="rest_code_b2a299d66a104f999b466a55d6d40200-18"></a>    <span class="p">{</span>    <span class="n">S2</span><span class="p">,</span>         <span class="n">_true</span><span class="p">,</span>       <span class="n">S0</span><span class="p">,</span>  <span class="mi">0</span>   <span class="p">},</span>
+<a name="rest_code_b2a299d66a104f999b466a55d6d40200-19"></a>    <span class="cm">/* STATE 3 */</span>
+<a name="rest_code_b2a299d66a104f999b466a55d6d40200-20"></a>    <span class="p">{</span>    <span class="n">S3</span><span class="p">,</span>         <span class="n">M_char</span><span class="p">,</span>      <span class="n">S4</span><span class="p">,</span>  <span class="mi">3</span>   <span class="p">},</span>
+<a name="rest_code_b2a299d66a104f999b466a55d6d40200-21"></a>    <span class="p">{</span>    <span class="n">S3</span><span class="p">,</span>      <span class="n">initial_char</span><span class="p">,</span>   <span class="n">S1</span><span class="p">,</span>  <span class="mi">0</span>   <span class="p">},</span>
+<a name="rest_code_b2a299d66a104f999b466a55d6d40200-22"></a>    <span class="p">{</span>    <span class="n">S3</span><span class="p">,</span>         <span class="n">_true</span><span class="p">,</span>       <span class="n">S0</span><span class="p">,</span>  <span class="mi">0</span>   <span class="p">},</span>
+<a name="rest_code_b2a299d66a104f999b466a55d6d40200-23"></a><span class="p">};</span>
+<a name="rest_code_b2a299d66a104f999b466a55d6d40200-24"></a>
+<a name="rest_code_b2a299d66a104f999b466a55d6d40200-25"></a><span class="kt">uint8_t</span> <span class="n">trs_size</span> <span class="o">=</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">trs</span><span class="p">)</span> <span class="o">/</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">trs</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+</pre>
+<p>The element in the second column is a function which will evaluate if this is
+the valid row. For example, when in state <em>S1</em> if <em>I_char</em> returns
+<em>true</em> (by <em>C's</em> definition) then it goes to state <em>S2</em>. Else if
+<em>initial_char</em> returns <em>true</em> it stays in state <em>S1</em>. The function <em>_true</em>
+always returns a <em>true</em> value.</p>
+<p>The order of the row declarations is important because they are tested
+from the starting row towards the ending row.</p>
+<p>The variable <em>trs_size</em> is the number of elements in the state machine
+description used in the main algorithm to iterate over all elements.</p>
+<p>These are the definitions of the fuctions used in the declaration of the
+state machine:</p>
+<pre class="code cpp"><a name="rest_code_15f7caa827cb41e5843291d074912867-1"></a><span class="k">static</span> <span class="kt">uint8_t</span> <span class="nf">initial_char</span><span class="p">(</span><span class="kt">char</span> <span class="n">c</span><span class="p">)</span>
+<a name="rest_code_15f7caa827cb41e5843291d074912867-2"></a><span class="p">{</span>
+<a name="rest_code_15f7caa827cb41e5843291d074912867-3"></a>    <span class="k">return</span> <span class="p">(</span><span class="n">c</span><span class="o">==</span><span class="sc">'R'</span> <span class="o">||</span> <span class="n">c</span><span class="o">==</span><span class="sc">'B'</span> <span class="o">||</span> <span class="n">c</span><span class="o">==</span><span class="sc">'E'</span> <span class="o">||</span> <span class="n">c</span><span class="o">==</span><span class="sc">'I'</span><span class="p">);</span>
+<a name="rest_code_15f7caa827cb41e5843291d074912867-4"></a><span class="p">}</span>
+<a name="rest_code_15f7caa827cb41e5843291d074912867-5"></a><span class="k">static</span> <span class="kt">uint8_t</span> <span class="nf">I_char</span><span class="p">(</span><span class="kt">char</span> <span class="n">ch</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="p">(</span><span class="n">ch</span> <span class="o">==</span> <span class="sc">'I'</span><span class="p">);</span> <span class="p">}</span>
+<a name="rest_code_15f7caa827cb41e5843291d074912867-6"></a><span class="k">static</span> <span class="kt">uint8_t</span> <span class="nf">T_char</span><span class="p">(</span><span class="kt">char</span> <span class="n">ch</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="p">(</span><span class="n">ch</span> <span class="o">==</span> <span class="sc">'T'</span><span class="p">);</span> <span class="p">}</span>
+<a name="rest_code_15f7caa827cb41e5843291d074912867-7"></a><span class="k">static</span> <span class="kt">uint8_t</span> <span class="nf">M_char</span><span class="p">(</span><span class="kt">char</span> <span class="n">ch</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="p">(</span><span class="n">ch</span> <span class="o">==</span> <span class="sc">'M'</span><span class="p">);</span> <span class="p">}</span>
+<a name="rest_code_15f7caa827cb41e5843291d074912867-8"></a><span class="k">static</span> <span class="kt">uint8_t</span> <span class="nf">_true</span> <span class="p">(</span><span class="kt">char</span> <span class="n">ch</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="mi">1</span><span class="p">;</span> <span class="p">}</span>
+</pre>
+<p>The function <em>initial_char</em> returns <em>true</em> if any of the characters
+valid to initiate a header is found. There is also one function for each of
+the extra possible characters. <em>_true</em> always returns <em>1</em>.</p>
+<p>And here is the final state machine code!</p>
+<pre class="code cpp"><a name="rest_code_ac10119522494f16bc8e8bccac30c638-1"></a><span class="kt">uint8_t</span> <span class="n">state</span> <span class="o">=</span> <span class="n">S0</span><span class="p">;</span>
+<a name="rest_code_ac10119522494f16bc8e8bccac30c638-2"></a><span class="k">do</span> <span class="p">{</span>
+<a name="rest_code_ac10119522494f16bc8e8bccac30c638-3"></a>    <span class="n">err</span> <span class="o">=</span> <span class="n">serial_read</span><span class="p">(</span><span class="o">&amp;</span><span class="n">b</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+<a name="rest_code_ac10119522494f16bc8e8bccac30c638-4"></a>    <span class="k">if</span> <span class="p">(</span><span class="n">err</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">)</span> <span class="k">continue</span><span class="p">;</span>
+<a name="rest_code_ac10119522494f16bc8e8bccac30c638-5"></a>
+<a name="rest_code_ac10119522494f16bc8e8bccac30c638-6"></a>    <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">trs_size</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+<a name="rest_code_ac10119522494f16bc8e8bccac30c638-7"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">state</span> <span class="o">==</span> <span class="n">trs</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">cur_state</span><span class="p">)</span> <span class="p">{</span>
+<a name="rest_code_ac10119522494f16bc8e8bccac30c638-8"></a>            <span class="k">if</span> <span class="p">(</span><span class="n">trs</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">valid</span><span class="p">((</span><span class="kt">char</span><span class="p">)</span> <span class="n">b</span><span class="p">))</span> <span class="p">{</span>
+<a name="rest_code_ac10119522494f16bc8e8bccac30c638-9"></a>                <span class="n">state</span> <span class="o">=</span> <span class="n">trs</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">next_state</span><span class="p">;</span>
+<a name="rest_code_ac10119522494f16bc8e8bccac30c638-10"></a>                <span class="n">rxbuf</span><span class="p">[</span><span class="n">trs</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">index</span><span class="p">]</span> <span class="o">=</span> <span class="n">b</span><span class="p">;</span>
+<a name="rest_code_ac10119522494f16bc8e8bccac30c638-11"></a>                <span class="k">break</span><span class="p">;</span>
+<a name="rest_code_ac10119522494f16bc8e8bccac30c638-12"></a>            <span class="p">}</span>
+<a name="rest_code_ac10119522494f16bc8e8bccac30c638-13"></a>        <span class="p">}</span>
+<a name="rest_code_ac10119522494f16bc8e8bccac30c638-14"></a>    <span class="p">}</span>
+<a name="rest_code_ac10119522494f16bc8e8bccac30c638-15"></a><span class="p">}</span> <span class="k">while</span> <span class="p">(</span><span class="n">state</span> <span class="o">!=</span> <span class="n">S4</span><span class="p">);</span>
+</pre>
+<p>In the end the code is actually bigger and probably less efficient. But
+it should be a lot easier to maintain. If I copy/paste it on another
+project I will only need to modify the state machine array declaration
+(and probably also the custom data).</p>
+</div>
+<div class="section" id="things-that-could-be-made-better">
+<h2>Things that could be made better</h2>
+<p>The is (at least) one thing which could be made better in the newer code.
+Look at these function definitions below:</p>
+<pre class="code cpp"><a name="rest_code_c1e127cf270d449fbd1380ad33a96b9a-1"></a><span class="k">static</span> <span class="kt">uint8_t</span> <span class="nf">I_char</span><span class="p">(</span><span class="kt">char</span> <span class="n">ch</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="p">(</span><span class="n">ch</span> <span class="o">==</span> <span class="sc">'I'</span><span class="p">);</span> <span class="p">}</span>
+<a name="rest_code_c1e127cf270d449fbd1380ad33a96b9a-2"></a><span class="k">static</span> <span class="kt">uint8_t</span> <span class="nf">T_char</span><span class="p">(</span><span class="kt">char</span> <span class="n">ch</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="p">(</span><span class="n">ch</span> <span class="o">==</span> <span class="sc">'T'</span><span class="p">);</span> <span class="p">}</span>
+<a name="rest_code_c1e127cf270d449fbd1380ad33a96b9a-3"></a><span class="k">static</span> <span class="kt">uint8_t</span> <span class="nf">M_char</span><span class="p">(</span><span class="kt">char</span> <span class="n">ch</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="p">(</span><span class="n">ch</span> <span class="o">==</span> <span class="sc">'M'</span><span class="p">);</span> <span class="p">}</span>
+</pre>
+<p>As it must be quite obvious, they all look pretty much the same. Only the
+character tested changes. There should be a way of fixing this with
+preprocessor macros. I have in mind something like this:</p>
+<pre class="code cpp"><a name="rest_code_92942ce6a3754489844125c691c9b8d2-1"></a><span class="cp">#define CHAR_FUN(c) static uint8_t c##_char(char ch) { return (ch == '##c##'); }</span>
+<a name="rest_code_92942ce6a3754489844125c691c9b8d2-2"></a>
+<a name="rest_code_92942ce6a3754489844125c691c9b8d2-3"></a><span class="n">CHAR_FUN</span> <span class="p">(</span><span class="n">I</span><span class="p">)</span>
+<a name="rest_code_92942ce6a3754489844125c691c9b8d2-4"></a><span class="n">CHAR_FUN</span> <span class="p">(</span><span class="n">T</span><span class="p">)</span>
+<a name="rest_code_92942ce6a3754489844125c691c9b8d2-5"></a><span class="n">CHAR_FUN</span> <span class="p">(</span><span class="n">M</span><span class="p">)</span>
+</pre>
+<p>The problem in this code is that <em>preprocessor's</em> concatenation doesn't work
+inside single quotes. So it generates the correct function name but the test
+will look like <em>ch == '##c##'</em> instead of the correct character.</p>
+<p>I'm not sure yet of how to do it but I'll keep trying!</p>
+</div>
+<div class="section" id="update-22-jun-2013">
+<h2>UPDATE (22 Jun 2013)</h2>
+<p>I just found a way of solving the problem above using <em>stringification</em> as
+provided by the preprocessor. Not great but it does the job.</p>
+<pre class="code cpp"><a name="rest_code_2172a71360a842e3b4dd4fd0e0e0120a-1"></a><span class="cp">#define CHAR_FUN(c) static uint8_t c##_char(char ch){char *s=#c;return(ch==s[0]);}</span>
+<a name="rest_code_2172a71360a842e3b4dd4fd0e0e0120a-2"></a><span class="n">CHAR_FUN</span> <span class="p">(</span><span class="n">I</span><span class="p">)</span>
+<a name="rest_code_2172a71360a842e3b4dd4fd0e0e0120a-3"></a><span class="n">CHAR_FUN</span> <span class="p">(</span><span class="n">T</span><span class="p">)</span>
+<a name="rest_code_2172a71360a842e3b4dd4fd0e0e0120a-4"></a><span class="n">CHAR_FUN</span> <span class="p">(</span><span class="n">M</span><span class="p">)</span>
+</pre>
+</div>
+</div>
+    </div>
+    </article><article class="h-entry post-text"><header><h1 class="p-name entry-title"><a href="posts/back-to-guitar-playing/" class="u-url">Back to guitar playing</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn">
+                Fabio Utzig
+            </span></p>
+            <p class="dateline"><a href="posts/back-to-guitar-playing/" rel="bookmark"><time class="published dt-published" datetime="2013-06-16T00:00:00-03:00" title="2013-06-16 00:00">2013-06-16 00:00</time></a></p>
+                <p class="commentline">
+        
+    <a href="posts/back-to-guitar-playing/#disqus_thread" data-disqus-identifier="cache/posts/back-to-guitar-playing.html">Comments</a>
+
+
+        </p>
+</div>
+    </header><div class="e-content entry-content">
+    <div>
+<p>I've been practicing some guitar playing on the last few weeks. Maybe
+a little longer than a few weeks! Anyway, after a lot of work and music
+listening, which is mostly jazz and fusion these days, I'm getting somewhat
+better at learning songs by ear. There's a song by the band Ohm:, the
+band of the great guitar player Chris Poland, that I really love and made
+a quick and dirty cover this afternoon. You can watch it here:</p>
+<iframe width="640" height="360" frameborder="0" allowfullscreen src="https://www.youtube.com/embed/0_Y8yp55uzs?rel=0">
+</iframe><p>I feel quite proud of learning the whole song by ear, without any kind of
+tablature and transcription help.</p>
+<p>And the next post, hopefully, will be about programming! :)</p>
+</div>
+    </div>
+    </article><article class="h-entry post-text"><header><h1 class="p-name entry-title"><a href="posts/fixing-the-serial-port-of-my-nexys2/" class="u-url">Fixing the serial port of my Nexys2</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn">
+                Fabio Utzig
+            </span></p>
+            <p class="dateline"><a href="posts/fixing-the-serial-port-of-my-nexys2/" rel="bookmark"><time class="published dt-published" datetime="2013-05-18T00:00:00-03:00" title="2013-05-18 00:00">2013-05-18 00:00</time></a></p>
+                <p class="commentline">
+        
+    <a href="posts/fixing-the-serial-port-of-my-nexys2/#disqus_thread" data-disqus-identifier="cache/posts/fixing-the-serial-port-of-my-nexys2.html">Comments</a>
+
+
+        </p>
+</div>
+    </header><div class="e-content entry-content">
+    <div>
+<p>I'm writing this post because today I <em>fixed</em> the serial port of my Nexys2
+board. This will mainly highlight how we can get trapped in some way of
+thinking when we're pretty sure about something and not contemplate a whole
+spectrum of options surrounding it. It will be somewhat shameful I guess,
+but let's see if you can find the solution more easily than I did!</p>
+<p>A month ago or so I was working on learning Verilog and was writing some code.
+I got to a point where I wanted to test a softcore and I needed to upload code
+through the serial port. While getting there, I made a <em>port</em> of the lattice
+mico32 softcore to my board. Actually the hard work was already done and I only
+had to make some very small adaptations. I used the code from this repo:</p>
+<p><a class="reference external" href="https://github.com/optixx/lm32">https://github.com/optixx/lm32</a></p>
+<p>The problem was that it booted, sent a prompt throught the serial port but I
+could not input commands. If you look at the code at <em>firmware/boot0-serial/main.c</em>
+you'll see that what it does is this:</p>
+<pre class="code cpp"><a name="rest_code_ffbba2ec7be54995a409bcea3fbc5ea5-1"></a><span class="n">uart_putstr</span><span class="p">(</span><span class="s">"**soc-lm32/bootloader** &gt; </span><span class="se">\r\n</span><span class="s">"</span><span class="p">);</span>
+<a name="rest_code_ffbba2ec7be54995a409bcea3fbc5ea5-2"></a><span class="n">c</span> <span class="o">=</span> <span class="n">uart_getchar</span><span class="p">();</span>
+</pre>
+<p>I'm omitting the irrelevant code. So I got the prompt but no data that I sent from
+the computer ever got in to the Nexys2.
+Since the lm32 is a quite complex softcore I thought that maybe it had
+some problems and ended up testing other UART cores. Actually I ended up writing
+my own which is at this repo (in the directory <em>uart</em>):</p>
+<p><a class="reference external" href="https://github.com/utzig/nexys2-verilog-samples">https://github.com/utzig/nexys2-verilog-samples</a> (btw, this is not good code!)</p>
+<p>The results were the same. It worked in the transmit direction only.</p>
+<p>The schematics for the Nexys2 UART converter is this:</p>
+<img alt="/images/nexys2_uart.png" src="images/nexys2_uart.png"><p>I put an oscilloscope on the RX signal and tried to find out what was
+happening. So here's how a RS232 UART works. The TX/RX lines are usually
+in high level. When you send data,
+the first thing it does is to send the <em>START</em> bit. A <em>START</em> bit is
+characterized by a transition from high to low level. The data bits go next
+and at last the <em>STOP</em> bit (or bits). What was happening here was that the
+RX line would go
+to low level and stay that way. It would never go back to high level. No data
+was going through. To get it back to working state I had to disconnect/reconnect.</p>
+<p>I started suspecting my the issue was with my USB &lt;-&gt; RS232 adapter. I got
+another board (an ARM CM3 powered devboard) and wrote some code for doing
+serial communications. This ended up working and I got data in and out. So
+it was clear the problem was not with my serial adapter. Btw, here are the
+schematics of the board I used to do the test (Olimex STM32-P103):</p>
+<img alt="/images/stm32-p103-uart.png" src="images/stm32-p103-uart.png"><p>The conclusion then was that the problem was either with the pin used for RX on
+my FPGA or with the onboard TTL &lt;-&gt; RS232 converter. So I ended up buying some extra
+converters to test it. And these things are not easy to get here in Brazil.
+But I found them at <a class="reference external" href="http://www.multcomercial.com.br">Multcomercial</a>. They arrived yesterday and this morning I
+removed the old ST3232 and put a new MAX3232 chip. You can see the final result
+below:</p>
+<img alt="/images/max3232.jpg" src="images/max3232.jpg"><p>As you can see I ended up destroying one onboard wire and had to fix with normal
+wire. When I turned it on, data came out and when I sent data nothing came in.
+Shit!!!</p>
+<p>So, the problem must be with the FPGA pin, right? Actually no, it isn't.</p>
+<p>Let's look harder at schematics! There are some difference between the two boards.
+The STM32 has the main lines (RX/TX/GND) connected in the standard way but
+it has also the CTS/RTS lines connected to the converter and has a resistor
+between DTR and DSR. The Nexys2 has the RX/TX/GND lines connected the same
+way but RTS is connected to CTS (no connection to the converter) and
+DSR/DTR/DCD are all connected together. Interesting, right?.</p>
+<p>I got a spare serial cable, soldered the 3 pins which matter (RX/TX/GND),
+tried again and voilá... data out and data in.</p>
+<p>Sometimes we get stuck with knowing for sure that we know what's happening
+but turns out we don't (at least it applies to me!).</p>
+</div>
+    </div>
+    </article><article class="h-entry post-text"><header><h1 class="p-name entry-title"><a href="posts/cheap-chinese-ssds/" class="u-url">Cheap Chinese SSDs</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn">
+                Fabio Utzig
+            </span></p>
+            <p class="dateline"><a href="posts/cheap-chinese-ssds/" rel="bookmark"><time class="published dt-published" datetime="2013-04-29T00:00:00-03:00" title="2013-04-29 00:00">2013-04-29 00:00</time></a></p>
+                <p class="commentline">
+        
+    <a href="posts/cheap-chinese-ssds/#disqus_thread" data-disqus-identifier="cache/posts/cheap-chinese-ssds.html">Comments</a>
+
+
+        </p>
+</div>
+    </header><div class="e-content entry-content">
+    <div>
+<p>Since I bought a Netbook last year, I wasn't very happy with it's HDD. The reason
+was that I had to disable the power management or at least configure it to not
+allow the spin down of the drive.</p>
+<pre class="code sh"><a name="rest_code_6949ae451de94d9785b224b3f48841c5-1"></a>$ sudo hdparm -B <span class="m">255</span> /dev/sda
+</pre>
+<p>The problem was so annoying that I could not even edit a text file on Vim without
+the disc spinning down constantly and hanging text entry for some seconds. Disabling
+power management was effective to solve the problem but then the battery would
+discharge faster. Also since the Netbook is so small and light, using it at any
+surface that is not very flat and stable causes slight movements which could
+damage the drive. It all bored me.</p>
+<p>So I wanted to install a SSD because it would solve all problems. No more
+disc spinning down, no need to disable power management and no requirement
+of having a stable surface to use it. The problem was the price. A SSD drive
+purchased here in Brazil would end up costing more that the Netbook itself!</p>
+<p>I did some research and ended up buying a cheap chinese SSD on Aliexpress. The link
+to the seller/product I purchased follows:</p>
+<p><a class="reference external" href="http://www.aliexpress.com/item/2-5-Inch-SATA-II-SSD-32GB-4-Channel-Solid-State-Disk-MLC-For-Notebook-computer/571854249.html">Kingspec 2.5 SATA 32GB</a></p>
+<p>After almost two months I'm happy so far. I was afraid it would end up giving
+some problem after some use but until now is like it was on first day. The system
+boots in something like 3 seconds (after BIOS). Everything got boosted up.
+The main problem is the size which prevents the use of some software. But I could
+build a Linux distro based on buildroot for a project I'm working on, I built
+cross toolchains for ARM/AVR/MSP430 and build llvm (which took 8 hours!!!). It suits
+me well since I can do the things I do day to day.</p>
+<p>When I bought it in January it cost me US$ 43. Now it's selling for US$ 39. I wonder
+how low this price will get in the next 3 months, 1 year. Even being a very simple
+SSD, lacking <em>important</em> features like TRIM, still was a great purchase. A now with
+more and more embedded boards coming with a SATA controller...</p>
+</div>
+    </div>
+    </article><article class="h-entry post-text"><header><h1 class="p-name entry-title"><a href="posts/arrow-and-cryptographic-protocols/" class="u-url">Arrow and cryptographic protocols</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn">
+                Fabio Utzig
+            </span></p>
+            <p class="dateline"><a href="posts/arrow-and-cryptographic-protocols/" rel="bookmark"><time class="published dt-published" datetime="2013-04-21T00:00:00-03:00" title="2013-04-21 00:00">2013-04-21 00:00</time></a></p>
+                <p class="commentline">
+        
+    <a href="posts/arrow-and-cryptographic-protocols/#disqus_thread" data-disqus-identifier="cache/posts/arrow-and-cryptographic-protocols.html">Comments</a>
+
+
+        </p>
+</div>
+    </header><div class="e-content entry-content">
+    <div>
+<p>This weekend I spent a lot of time watching <a class="reference external" href="http://www.imdb.com/title/tt2193021/?ref_=sr_1">Arrow</a>.
+I started watching it last year but then lost interest and now decided to
+get up to speed. I watched episodes 11 to 19 (most recent). It actually
+got quite good.</p>
+<p>The first 10 or so episodes are kind of self-contained. It's
+like watching <em>Law and Order</em> were you can watch any episode and you don't
+loose much. The exception are the flashbacks where the story of Oliver
+Queen during the five years he spent as a castaway on an chinese Island and
+was considered dead are told. Btw, the name Green Arrow was never used in
+the series. The vigilante's name in the series is <strong>The Hood</strong>.</p>
+<p>But from episode 12 and forward the story gets more serialized so that
+every episode is a continuation of the previous one.</p>
+<p>Although I'm liking the series, there are so many annoyances that requires
+you to develop new levels of <em>suspension of disbelief</em>. Let me be clear:
+I have no problem with super-heroes.
+But there are no super-heroes in Arrow. There are only
+heroes that are all normal people (with special training, of course). But than
+you see every hero and villain killing many bandits, police offices and FBI
+agents armed with machine guns using only rudimentary weapons like bow and
+arrow or throwing knives... I roll my eyes everytime...</p>
+<p>The best parts of the show are the ones told in flashbacks which tell the
+story of Oliver Queen after a shipwreck and his years living with <em>soldiers</em>.</p>
+<p>But the real reason for me to write this post is to mention about the computer
+related scenes. Oh gosh... they are so bad that they are funny. One scene really
+deserves special mention. It's on episode 11 and <a class="reference external" href="http://arrow.wikia.com/wiki/Felicity_Smoak">Felicity Smoak</a> is hacking a pen
+drive and then what follows is this screen of code:</p>
+<table class="codetable"><tr>
+<td class="linenos"><div class="linenodiv"><pre><a href="posts/arrow-and-cryptographic-protocols/#rest_code_896b63945e9443b2b239879807bfc39b-1"> 1</a>
+<a href="posts/arrow-and-cryptographic-protocols/#rest_code_896b63945e9443b2b239879807bfc39b-2"> 2</a>
+<a href="posts/arrow-and-cryptographic-protocols/#rest_code_896b63945e9443b2b239879807bfc39b-3"> 3</a>
+<a href="posts/arrow-and-cryptographic-protocols/#rest_code_896b63945e9443b2b239879807bfc39b-4"> 4</a>
+<a href="posts/arrow-and-cryptographic-protocols/#rest_code_896b63945e9443b2b239879807bfc39b-5"> 5</a>
+<a href="posts/arrow-and-cryptographic-protocols/#rest_code_896b63945e9443b2b239879807bfc39b-6"> 6</a>
+<a href="posts/arrow-and-cryptographic-protocols/#rest_code_896b63945e9443b2b239879807bfc39b-7"> 7</a>
+<a href="posts/arrow-and-cryptographic-protocols/#rest_code_896b63945e9443b2b239879807bfc39b-8"> 8</a>
+<a href="posts/arrow-and-cryptographic-protocols/#rest_code_896b63945e9443b2b239879807bfc39b-9"> 9</a>
+<a href="posts/arrow-and-cryptographic-protocols/#rest_code_896b63945e9443b2b239879807bfc39b-10">10</a>
+<a href="posts/arrow-and-cryptographic-protocols/#rest_code_896b63945e9443b2b239879807bfc39b-11">11</a>
+<a href="posts/arrow-and-cryptographic-protocols/#rest_code_896b63945e9443b2b239879807bfc39b-12">12</a>
+<a href="posts/arrow-and-cryptographic-protocols/#rest_code_896b63945e9443b2b239879807bfc39b-13">13</a>
+<a href="posts/arrow-and-cryptographic-protocols/#rest_code_896b63945e9443b2b239879807bfc39b-14">14</a>
+<a href="posts/arrow-and-cryptographic-protocols/#rest_code_896b63945e9443b2b239879807bfc39b-15">15</a>
+<a href="posts/arrow-and-cryptographic-protocols/#rest_code_896b63945e9443b2b239879807bfc39b-16">16</a>
+<a href="posts/arrow-and-cryptographic-protocols/#rest_code_896b63945e9443b2b239879807bfc39b-17">17</a>
+<a href="posts/arrow-and-cryptographic-protocols/#rest_code_896b63945e9443b2b239879807bfc39b-18">18</a>
+<a href="posts/arrow-and-cryptographic-protocols/#rest_code_896b63945e9443b2b239879807bfc39b-19">19</a>
+<a href="posts/arrow-and-cryptographic-protocols/#rest_code_896b63945e9443b2b239879807bfc39b-20">20</a>
+<a href="posts/arrow-and-cryptographic-protocols/#rest_code_896b63945e9443b2b239879807bfc39b-21">21</a></pre></div></td>
+<td class="code"><pre class="code cpp"><a name="rest_code_896b63945e9443b2b239879807bfc39b-1"></a> <span class="k">for</span><span class="p">(</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">argc</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<a name="rest_code_896b63945e9443b2b239879807bfc39b-2"></a>    <span class="k">if</span><span class="p">(</span> <span class="n">argv</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="sc">'-'</span><span class="p">)</span>
+<a name="rest_code_896b63945e9443b2b239879807bfc39b-3"></a>       <span class="k">switch</span><span class="p">(</span> <span class="n">argv</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+<a name="rest_code_896b63945e9443b2b239879807bfc39b-4"></a>          <span class="p">{</span>
+<a name="rest_code_896b63945e9443b2b239879807bfc39b-5"></a>          <span class="k">case</span> <span class="sc">'j'</span><span class="o">:</span> <span class="k">case</span> <span class="sc">'J'</span><span class="o">:</span>
+<a name="rest_code_896b63945e9443b2b239879807bfc39b-6"></a>             <span class="n">julian</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<a name="rest_code_896b63945e9443b2b239879807bfc39b-7"></a>             <span class="k">break</span><span class="p">;</span>
+<a name="rest_code_896b63945e9443b2b239879807bfc39b-8"></a>          <span class="k">case</span> <span class="sc">'q'</span><span class="o">:</span> <span class="k">case</span> <span class="sc">'Q'</span><span class="o">:</span>
+<a name="rest_code_896b63945e9443b2b239879807bfc39b-9"></a>             <span class="n">quiet</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<a name="rest_code_896b63945e9443b2b239879807bfc39b-10"></a>             <span class="k">break</span><span class="p">;</span>
+<a name="rest_code_896b63945e9443b2b239879807bfc39b-11"></a>          <span class="k">case</span> <span class="sc">'s'</span><span class="o">:</span> <span class="k">case</span> <span class="sc">'S'</span><span class="o">:</span>
+<a name="rest_code_896b63945e9443b2b239879807bfc39b-12"></a>             <span class="n">sat_no</span> <span class="o">=</span> <span class="n">atoi</span><span class="p">(</span> <span class="n">argv</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span><span class="p">);</span>
+<a name="rest_code_896b63945e9443b2b239879807bfc39b-13"></a>             <span class="k">break</span><span class="p">;</span>
+<a name="rest_code_896b63945e9443b2b239879807bfc39b-14"></a>          <span class="k">case</span> <span class="sc">'d'</span><span class="o">:</span> <span class="k">case</span> <span class="sc">'D'</span><span class="o">:</span>
+<a name="rest_code_896b63945e9443b2b239879807bfc39b-15"></a>             <span class="n">n_days</span> <span class="o">=</span> <span class="n">atoi</span><span class="p">(</span> <span class="n">argv</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span><span class="p">);</span>
+<a name="rest_code_896b63945e9443b2b239879807bfc39b-16"></a>             <span class="k">break</span><span class="p">;</span>
+<a name="rest_code_896b63945e9443b2b239879807bfc39b-17"></a>          <span class="k">case</span> <span class="sc">'f'</span><span class="o">:</span> <span class="k">case</span> <span class="sc">'F'</span><span class="o">:</span>
+<a name="rest_code_896b63945e9443b2b239879807bfc39b-18"></a>             <span class="n">ofile</span> <span class="o">=</span> <span class="n">fopen</span><span class="p">(</span> <span class="n">argv</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="s">"wb"</span><span class="p">);</span>
+<a name="rest_code_896b63945e9443b2b239879807bfc39b-19"></a>             <span class="k">break</span><span class="p">;</span>
+<a name="rest_code_896b63945e9443b2b239879807bfc39b-20"></a>          <span class="k">case</span> <span class="sc">'r'</span><span class="o">:</span> <span class="k">case</span> <span class="sc">'R'</span><span class="o">:</span>
+<a name="rest_code_896b63945e9443b2b239879807bfc39b-21"></a>             <span class="n">data_file</span> <span class="o">=</span> <span class="n">fopen</span><span class="p">(</span> <span class="n">argv</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span><span class="p">,</span> <span class="s">"ab"</span><span class="p">);</span>
+</pre></td>
+</tr></table>
+<p>And then she describes it as: <strong>Military grade cryptographic security protocol</strong>!!!</p>
+<img alt="/images/laugh.jpg" src="images/laugh.jpg"><p>The code seems to come from this file:</p>
+<p><a class="reference external" href="https://bitbucket.org/nloadholtes/lunar/src/fd2d71716eda/jevent.cpp">https://bitbucket.org/nloadholtes/lunar/src/fd2d71716eda/jevent.cpp</a></p>
+<p>Also funny was that the screens of code load slowly like if running on very
+old computers... Go watch it on youtube:</p>
+<p><a class="reference external" href="http://www.youtube.com/watch?v=o-7ypLaVxsw#t=0m50s">Felicity Smoak and security lesson!?</a></p>
+<p>Btw, every single people on the show uses Nokia Lumia's and LeNovo computers running
+Windows 8... go figure!</p>
+</div>
+    </div>
+    </article><article class="h-entry post-text"><header><h1 class="p-name entry-title"><a href="posts/running-bootcamp-linux-on-parallels/" class="u-url">Running Bootcamp Linux on Parallels</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn">
+                Fabio Utzig
+            </span></p>
+            <p class="dateline"><a href="posts/running-bootcamp-linux-on-parallels/" rel="bookmark"><time class="published dt-published" datetime="2013-04-07T00:00:00-03:00" title="2013-04-07 00:00">2013-04-07 00:00</time></a></p>
+                <p class="commentline">
+        
+    <a href="posts/running-bootcamp-linux-on-parallels/#disqus_thread" data-disqus-identifier="cache/posts/running-bootcamp-linux-on-parallels.html">Comments</a>
+
+
+        </p>
+</div>
+    </header><div class="e-content entry-content">
+    <div>
+<p>Some weeks after I bought my MacBook Pro about two years ago I decided
+that I needed to run both Mac OS X, Windows and Linux on it so at the time
+I upgraded the original HDD to a Seagate 7200rpm 750GB disk.</p>
+<p>I installed both Windows 7 and Linux as Bootcamp partitions. Bootcamp
+for Mac basically does BIOS emulation and enables you to use old style MBR
+partitions for booting operating systems (and some other things too). Mac OS X
+uses EFI and GPT.</p>
+<p>I use <a class="reference external" href="http://refit.sourceforge.net/">rEFIt</a> to triple boot my system. It displays an operating system
+chooser at startup with fancy graphics and also maintains consistency between
+GPT and MBR partitions.</p>
+<p>But the problem is that it sucks having to reboot everytime you have to run
+a program on another operating system!</p>
+<p>For Windows, I've been running it on <a class="reference external" href="http://www.parallels.com/">Parallels Desktop</a> as well as native. Parallels
+does some fancy integration enabling Windows programs to run on Mac OS X screen
+and works as Mac programs, including clipboard integration and such.</p>
+<p>So my objective was to run Linux on Parallels as well is runs Windows. For
+Windows you just have to create a new VM using a Bootcamp partition and
+Parallels takes care of all configurations and everything is done automatically.
+For Linux you have to do pretty much everything manually. Almost everything
+is standard VM configuration and straightforward for those used to running VM
+software. The hardest part is making the hard disk emulation run from a native
+partition.</p>
+<p>So I started adding the machine's disk, enumeration and selected the partition
+using the GUI. But when I started the machine it hanged with error: <em>missing
+operating system</em>.</p>
+<p>Looking into the internals of a Parallels VM, there is one directory for each
+created VM. For Linux it was located in:</p>
+<blockquote>
+/Users/utzig/Documents/Parallels/Arch Linux.pvm/ST9750420AS (disk0).hdd/</blockquote>
+<p>The contents were basically these (with some extra backups, etc):</p>
+<blockquote>
+DiskDescriptor.xml
+PhysicalGpt.hds
+PhysicalMbr.hds</blockquote>
+<p><em>DiskDescriptor</em>'s contents seemed right. I tried comparing the _hds_ files
+to the Windows VM's counterparts and they were equal. And here's the catch.
+Those who remember the old days of _DOS_ will probably remember that there
+was only one MBR partition that could boot a system. The partition set as
+bootable. So this was the main problem, I had created the Linux VM having my
+Windows partition as bootable!</p>
+<p>So I removed again the hard disk from the Linux VM in Parallels and then
+changed the bootable partition on the command line. To do that on Mac OS X,
+open the terminal and run:</p>
+<pre class="code sh"><a name="rest_code_16ec40a4d763448e97c708a7c9f7d60a-1"></a>$ sudo fdisk -e /dev/rdisk0
+<a name="rest_code_16ec40a4d763448e97c708a7c9f7d60a-2"></a>
+<a name="rest_code_16ec40a4d763448e97c708a7c9f7d60a-3"></a>fdisk: 1&gt; p
+<a name="rest_code_16ec40a4d763448e97c708a7c9f7d60a-4"></a>Disk: /dev/rdisk0   geometry: 91201/255/63 <span class="o">[</span><span class="m">1465149168</span> sectors<span class="o">]</span>
+<a name="rest_code_16ec40a4d763448e97c708a7c9f7d60a-5"></a>Offset: <span class="m">0</span>   Signature: 0xAA55
+<a name="rest_code_16ec40a4d763448e97c708a7c9f7d60a-6"></a>         Starting       Ending
+<a name="rest_code_16ec40a4d763448e97c708a7c9f7d60a-7"></a> <span class="c1">#: id  cyl  hd sec -  cyl  hd sec [     start -       size]</span>
+<a name="rest_code_16ec40a4d763448e97c708a7c9f7d60a-8"></a>------------------------------------------------------------------------
+<a name="rest_code_16ec40a4d763448e97c708a7c9f7d60a-9"></a> 1: EE <span class="m">1023</span> <span class="m">254</span>  <span class="m">63</span> - <span class="m">1023</span> <span class="m">254</span>  <span class="m">63</span> <span class="o">[</span>         <span class="m">1</span> -     409639<span class="o">]</span> &lt;Unknown ID&gt;
+<a name="rest_code_16ec40a4d763448e97c708a7c9f7d60a-10"></a> 2: AF <span class="m">1023</span> <span class="m">254</span>  <span class="m">63</span> - <span class="m">1023</span> <span class="m">254</span>  <span class="m">63</span> <span class="o">[</span>    <span class="m">409640</span> -  997771856<span class="o">]</span> HFS+
+<a name="rest_code_16ec40a4d763448e97c708a7c9f7d60a-11"></a> 3: <span class="m">07</span> <span class="m">1023</span> <span class="m">254</span>  <span class="m">63</span> - <span class="m">1023</span> <span class="m">254</span>  <span class="m">63</span> <span class="o">[</span> <span class="m">998445056</span> -  230230016<span class="o">]</span> HPFS/QNX/AUX
+<a name="rest_code_16ec40a4d763448e97c708a7c9f7d60a-12"></a>*4: <span class="m">83</span> <span class="m">1023</span> <span class="m">254</span>  <span class="m">63</span> - <span class="m">1023</span> <span class="m">254</span>  <span class="m">63</span> <span class="o">[</span><span class="m">1228675072</span> -  236211912<span class="o">]</span> Linux files*
+<a name="rest_code_16ec40a4d763448e97c708a7c9f7d60a-13"></a>fdisk: 1&gt;
+</pre>
+<p>The necessary commands to know here are: <strong>p</strong> to print the partition table, <strong>f</strong>
+to set the bootable partition and <strong>quit</strong> to quit saving. So by running <strong>f 4</strong> I set
+the Linux partition to bootable which is shown by the <strong>star</strong> symbols enclosing
+the line.</p>
+<p>Then I re-added the hard disk to the Linux VM which this time booted to GRUB.
+Linux hanged because it couldn't find the root partition. After some fiddling
+I found that I had to add the line:</p>
+<blockquote>
+MODULES="ahci libahci sd_mod"</blockquote>
+<p>to <em>/etc/mkinitcpio.conf</em> and re-create the initramfs image. That does make some
+sense but I don't know exaclty why it would work without it when booting native.</p>
+<p>After being able to get to the Linux console I spent some time cleaning up to
+run on a VM.</p>
+<p>But the funny part really comes when configuring Linux's graphic programs to
+run on Mac OS X kinda like Parallels does for Windows with Coherence. For Linux
+it relies on X11 and since Mac OS X already has <strong>X11.app</strong> or you can also run
+<a class="reference external" href="http://xquartz.macosforge.org/landing/">XQuartz</a> (which I do), I could enable Linux apps to present on Mac OS X. For
+that I used SSH X11 forwarding. By editing <em>/etc/ssh/sshd_config</em> on Linux and
+changing the following configurations:</p>
+<blockquote>
+X11Forwarding yes
+X11DisplayOffset 10
+X11UseLocalhost yes</blockquote>
+<p>After restarting <em>sshd</em> now I can ssh to my Linux VM</p>
+<pre class="code sh"><a name="rest_code_c30c8848dc16490789875703df38a713-1"></a>$ ssh -Y 10.211.55.4
+</pre>
+<p>It should already export the correct <em>$DISPLAY</em> env variable with a value
+that mirrors the <em>X11DisplayOffset</em> from sshd_config. If not just configure
+it manually:</p>
+<pre class="code sh"><a name="rest_code_6e05eaf90a7649bb9f3093f1e34a3b1d-1"></a>$ <span class="nb">export</span> <span class="nv">DISPLAY</span><span class="o">=</span>localhost:10.0
+</pre>
+<p>And the try running:</p>
+<pre class="code sh"><a name="rest_code_c7ddf8f25d2c4e85aaa37793070bea65-1"></a>$ xeyes
+</pre>
+<p>If everything works alright <em>xeyes</em> should now be running on you Mac OS X!</p>
+<p>The really useful part is running applications that don't have a Mac OS X
+port like, for example, <a class="reference external" href="http://www.xilinx.com/products/design-tools/ise-design-suite/ise-webpack.htm">Xilinx ISE WebPACK</a>. So here a screenshot of ISE
+running on Mac OS X and synthesizing the <em>pong</em> example!</p>
+<img alt="/images/xilinx_ise_mac.jpg" src="images/xilinx_ise_mac.jpg">
+</div>
+    </div>
+    </article><article class="h-entry post-text"><header><h1 class="p-name entry-title"><a href="posts/tcpip-on-an-avr/" class="u-url">TCP/IP on an AVR microcontroller</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn">
+                Fabio Utzig
+            </span></p>
+            <p class="dateline"><a href="posts/tcpip-on-an-avr/" rel="bookmark"><time class="published dt-published" datetime="2013-03-26T00:00:00-03:00" title="2013-03-26 00:00">2013-03-26 00:00</time></a></p>
+                <p class="commentline">
+        
+    <a href="posts/tcpip-on-an-avr/#disqus_thread" data-disqus-identifier="cache/posts/tcpip-on-an-avr.html">Comments</a>
+
+
+        </p>
+</div>
+    </header><div class="e-content entry-content">
+    <div>
+<p>Last week I was going through some boards I bought last year which ended up
+on some pile of electronics trash here and I found this very cheap Microchip
+ENC28J60 based Ethernet to SPI bridge adapter and thought it would be cool
+to use it for something.</p>
+<p>This little board can be bought on <a class="reference external" href="http://www.aliexpress.com/">Aliexpress</a> for a price close to US$ 5 or 6.</p>
+<p>Here the product's website: <a class="reference external" href="http://www.lctech-inc.com/Hardware/Detail.aspx?id=588fbc2e-ecc1-4013-ac35-69bc83bda1fb">ENC28J60 Network Module</a></p>
+<p>I ended up choosing to use and Seeeduino Mega (Arduino Clone) to run the
+tcp/ip stack and wrote the remaining software myself. I started with one of
+my preferred RTOS's, <a class="reference external" href="http://www.chibios.org/">ChibiOS/RT</a> which already has
+a demo for Arduino based boards, thanks to yours truly!</p>
+<p>Since there is no SPI driver for AVR based microcontrollers, I ended writing one
+myself (and contributing back). That was the easiest part, I guess.</p>
+<p>After that I created the demo based on an existing uIP (a lightweight TCP/IP
+stack) demo already available on mainstream ChibiOS/RT but tailoring (or stripping
+it down) for the AVR.</p>
+<p>Since the microcontroller has only 8K for RAM I had to remove the webserver from
+the demo and enabled the hello world app from uIP which is basically just a
+listening socket that has functionality similar to an echo server.</p>
+<p>The hard part was writing the ENC28J60 driver. I started using a driver from the
+<a class="reference external" href="https://github.com/jcw/ethercard">EtherCard</a> project and <em>porting</em> it to ChibiOS/RT.</p>
+<p>After some days of debugging and quite some time lost because I was using
+a SPI clock (8MHz) which made communication between the Arduino and ENC28J60 unreliable
+(although far from the limits of the ENC28J60 chip itself which are 20MHz),
+I finally got to the stage of working <em>ping</em> now.</p>
+<p>Ping itself is taking currently takes around 4.5 ms on a cross-over cable which is
+ok, I guess. Sometimes it doesn't work which sucks. The issue is probably with
+buffers...</p>
+<p>From now on things should get a lot easier and probably very soon this will be
+production ready.</p>
+<p>Finally a photo of my current setup!</p>
+<img alt="/images/arduino_enc28j60.jpg" src="images/arduino_enc28j60.jpg"><p>The project sources are available for those courageous and crazy enough:</p>
+<p><a class="reference external" href="https://github.com/utzig/chibios-avr-enc28j60-demo">https://github.com/utzig/chibios-avr-enc28j60-demo</a></p>
+</div>
+    </div>
+    </article><article class="h-entry post-text"><header><h1 class="p-name entry-title"><a href="posts/asus-1025c-review/" class="u-url">Asus 1025c</a></h1>
+        <div class="metadata">
+            <p class="byline author vcard"><span class="byline-name fn">
+                Fabio Utzig
+            </span></p>
+            <p class="dateline"><a href="posts/asus-1025c-review/" rel="bookmark"><time class="published dt-published" datetime="2013-02-21T00:00:00-03:00" title="2013-02-21 00:00">2013-02-21 00:00</time></a></p>
+                <p class="commentline">
+        
+    <a href="posts/asus-1025c-review/#disqus_thread" data-disqus-identifier="cache/posts/asus-1025c-review.html">Comments</a>
+
+
+        </p>
+</div>
+    </header><div class="e-content entry-content">
+    <div>
+<p>Last November I did not resist the temptation and bought a Netbook.
+For some time I had been wishing to buy a <strong>very portable</strong> computer
+that could be carried anywhere without much effort. I'd been keep an eye on
+the Asus 1025c for a few months due to its relatively well powered
+processor (for an Atom, obviously) and low-price.</p>
+<p>So, on Black Friday, the day of making new debts, which we proudly copied
+from the Yankees, although ours is a kinda watered down version, I saw it
+for 75% of the normal price and voilá, here it is.</p>
+<p>The specs of this <strong>beast</strong> are:</p>
+<ul class="simple">
+<li>Atom N2600 1.6GHz</li>
+<li>2GB RAM</li>
+<li>320GB HDD</li>
+<li>10" screen</li>
+<li>Atheros AR9485 WiFi</li>
+</ul>
+<p>It came with Windows 7 Starter so guess what's the first thing to do? Not
+hard, huh.</p>
+<p>I ended up installing Linux (Arch), FreeBSD and NetBSD. Despite the quite
+new hardware every OS works fairly well. Linux had a lot of problems
+with the WiFi chip initially but in the latest kernel versions it works
+really well.</p>
+<p>The low-point has been the video support. For the N2x00 Atom family, Intel
+decided to license the PowerVR SGX 545 core from Imagination Technologies.
+So basically there's no 2D and 3D acceleration. Intel even released a closed
+source driver which require some old versions of many packages which there's
+no way to use with a rolling release like Arch Linux.</p>
+<p>In general I'm impressed with the performance of the machine. It's not close
+to a Core i5/7 but it's better than I expected. As long as the quad-core is
+exploited with things like <em>make -j4</em> it is good to go. The two main problems
+with system limitations were: running Eclipse for anything; and synthesizing
+VHDL/Verilog designs. The Xilinx tools take a really long time to synthesize
+anything. But they are slow even on an i5 anyway!</p>
+</div>
+    </div>
+    </article>
+</div>
+
+
+
+        
+       <script>var disqus_shortname="utzig";(function(){var a=document.createElement("script");a.async=true;a.src="https://"+disqus_shortname+".disqus.com/count.js";(document.getElementsByTagName("head")[0]||document.getElementsByTagName("body")[0]).appendChild(a)}());</script>
+</div>
+        <!--End of body content-->
+
+        <footer id="footer">
+            Contents © 2016         <a href="mailto:utzig@utzig.org">Fabio Utzig</a> - Powered by         <a href="https://getnikola.com" rel="nofollow">Nikola</a>         
+            
+        </footer>
+</div>
+</div>
+
+
+            <script src="assets/js/all-nocdn.js"></script><script>$('a.image-reference:not(.islink) img:not(.islink)').parent().colorbox({rel:"gal",maxWidth:"100%",maxHeight:"100%",scalePhotos:true});</script><!-- fancy dates --><script>
+    moment.locale("en");
+    fancydates(0, "YYYY-MM-DD HH:mm");
+    </script><!-- end fancy dates -->
+</body>
+</html>
